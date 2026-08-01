@@ -10,4 +10,5 @@ export const authApi = {
   resetPassword: (data) => axiosClient.post('/auth/reset-password', data),
   getCurrentUser: () => axiosClient.get('/users/me'),
   updateProfile: (data) => axiosClient.put('/users/me', data),
+  getTransactionHistory: () => axiosClient.get('/users/me/transactions'),
 };
