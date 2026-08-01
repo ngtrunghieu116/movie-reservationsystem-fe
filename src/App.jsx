@@ -3,9 +3,7 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { AuthProvider } from './context/AuthContext';
 import Navbar from './components/Navbar';
 import ProtectedRoute from './components/ProtectedRoute';
-import AIChatWidget from './components/AIChatWidget';
 
-import Home from './pages/Home';
 import Login from './pages/Login';
 import Register from './pages/Register';
 import Profile from './pages/Profile';
@@ -21,7 +19,6 @@ function App() {
             <Navbar />
             <main>
               <Routes>
-                <Route path="/" element={<Home />} />
                 <Route path="/login" element={<Login />} />
                 <Route path="/register" element={<Register />} />
                 <Route path="/forgot-password" element={<ForgotPassword />} />
@@ -34,8 +31,6 @@ function App() {
               </Routes>
             </main>
           </div>
-
-          <AIChatWidget />
 
           <footer className="bg-white border-t border-slate-200/80 py-8 text-center text-xs text-slate-500 mt-16">
             <div className="max-w-7xl mx-auto px-4 flex flex-col sm:flex-row justify-between items-center gap-4">
