@@ -1,48 +1,70 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import Navbar from './components/Navbar';
-import ProtectedRoute from './components/ProtectedRoute';
-import { AuthProvider } from './context/AuthContext';
+import AppProviders from './providers/AppProviders';
+import MainLayout from './layouts/MainLayout';
+import ProtectedRoute from './routes/ProtectedRoute';
+import GuestRoute from './routes/GuestRoute';
+
+import Home from './pages/Home';
+import MovieList from './pages/MovieList';
+import MovieDetail from './pages/MovieDetail';
+import TheaterList from './pages/TheaterList';
+import TicketPrices from './pages/TicketPrices';
+import About from './pages/About';
+import FoodPreview from './pages/FoodPreview';
+import MyBookings from './pages/MyBookings';
+import Profile from './pages/Profile';
 
 import Login from './pages/Login';
 import Register from './pages/Register';
-import Profile from './pages/Profile';
 import ForgotPassword from './pages/ForgotPassword';
 import ResetPassword from './pages/ResetPassword';
 
+import NotFound from './pages/NotFound';
+import Unauthorized from './pages/Unauthorized';
+import Forbidden from './pages/Forbidden';
+import ServerError from './pages/ServerError';
+
+import ROUTES from './constants/routes';
+
 function App() {
   return (
-    <AuthProvider>
+    <AppProviders>
       <Router>
-        <div className="min-h-screen bg-slate-50 text-slate-900 flex flex-col justify-between relative selection:bg-red-500 selection:text-white">
-          <div>
-            <Navbar />
-            <main>
-              <Routes>
-                <Route path="/" element={<div className="text-center py-20 text-4xl font-extrabold">CineMind Trang Chủ</div>} />
-                <Route path="/login" element={<Login />} />
-                <Route path="/register" element={<Register />} />
-                <Route path="/forgot-password" element={<ForgotPassword />} />
-                <Route path="/reset-password" element={<ResetPassword />} />
+        <Routes>
+          {/* Main Layout Shell */}
+          <Route element={<MainLayout />}>
+            <Route path={ROUTES.HOME} element={<Home />} />
+            <Route path={ROUTES.MOVIES} element={<MovieList />} />
+            <Route path={ROUTES.MOVIE_DETAIL} element={<MovieDetail />} />
+            <Route path={ROUTES.THEATERS} element={<TheaterList />} />
+            <Route path={ROUTES.TICKET_PRICES} element={<TicketPrices />} />
+            <Route path={ROUTES.ABOUT} element={<About />} />
+            <Route path={ROUTES.FOOD_PREVIEW} element={<FoodPreview />} />
 
-                {/* Protected Routes */}
-                <Route element={<ProtectedRoute />}>
-                  <Route path="/profile" element={<Profile />} />
-                </Route>
-              </Routes>
-            </main>
-          </div>
+            {/* Guest Only Routes */}
+            <Route element={<GuestRoute />}>
+              <Route path={ROUTES.LOGIN} element={<Login />} />
+              <Route path={ROUTES.REGISTER} element={<Register />} />
+              <Route path={ROUTES.FORGOT_PASSWORD} element={<ForgotPassword />} />
+              <Route path={ROUTES.RESET_PASSWORD} element={<ResetPassword />} />
+            </Route>
 
-          <footer className="bg-white border-t border-slate-200/80 py-8 text-center text-xs text-slate-500 mt-16">
-            <div className="max-w-7xl mx-auto px-4 flex flex-col sm:flex-row justify-between items-center gap-4">
-              <p className="font-medium text-slate-600">
-                © 2026 <span className="text-red-600 font-bold">CineMind</span>. All rights reserved.
-              </p>
-            </div>
-          </footer>
-        </div>
+            {/* Protected Routes */}
+            <Route element={<ProtectedRoute />}>
+              <Route path={ROUTES.PROFILE} element={<Profile />} />
+              <Route path={ROUTES.MY_BOOKINGS} element={<MyBookings />} />
+            </Route>
+
+            {/* Error Pages */}
+            <Route path={ROUTES.UNAUTHORIZED} element={<Unauthorized />} />
+            <Route path={ROUTES.FORBIDDEN} element={<Forbidden />} />
+            <Route path={ROUTES.SERVER_ERROR} element={<ServerError />} />
+            <Route path="*" element={<NotFound />} />
+          </Route>
+        </Routes>
       </Router>
-    </AuthProvider>
+    </AppProviders>
   );
 }
 
