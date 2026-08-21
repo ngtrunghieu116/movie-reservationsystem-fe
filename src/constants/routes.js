@@ -12,6 +12,7 @@ export const ROUTES = {
   REGISTER: '/register',
   FORGOT_PASSWORD: '/forgot-password',
   RESET_PASSWORD: '/reset-password',
+  BOOKING: '/booking/:showtimeId',
   UNAUTHORIZED: '/401',
   FORBIDDEN: '/403',
   NOT_FOUND: '/404',
