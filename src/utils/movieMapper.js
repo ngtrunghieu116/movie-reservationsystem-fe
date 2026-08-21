@@ -28,15 +28,23 @@ export const movieMapper = {
         
         return {
             id: response.id,
-            title: response.title || 'Unknown Title',
+            title: response.title || 'Chưa có tên',
+            titleEn: response.titleEn,
             poster: poster,
             banner: banner,
+            rawDuration: response.duration,
             duration: movieFormatter.formatDuration(response.duration),
             ageRating: response.ageRating || 'P',
-            genres: response.genres ? response.genres.map(g => g.name || g) : [],
+            genres: response.genres ? response.genres.map(g => typeof g === 'string' ? g : (g.name || '')) : [],
             releaseDate: response.releaseDate,
+            endDate: response.endDate,
             status: response.status || 'UNKNOWN',
             trailerUrl: response.trailerUrl,
+            description: response.description || '',
+            director: response.director || 'Đang cập nhật',
+            actors: response.actors || 'Đang cập nhật',
+            language: response.language || 'Tiếng Việt',
+            subtitle: response.subtitle || 'Phụ đề Tiếng Việt',
             rating: movieFormatter.formatRating(response.averageRating ?? response.rating)
         };
     },
