@@ -1,4 +1,3 @@
-import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import AppProviders from './providers/AppProviders';
 import MainLayout from './layouts/MainLayout';
@@ -14,6 +13,9 @@ import About from './pages/About';
 import FoodPreview from './pages/FoodPreview';
 import MyBookings from './pages/MyBookings';
 import Profile from './pages/Profile';
+import Booking from './pages/Booking';
+import Payment from './pages/Payment';
+import PaymentResult from './pages/PaymentResult';
 
 import Login from './pages/Login';
 import Register from './pages/Register';
@@ -54,6 +56,9 @@ function App() {
             <Route element={<ProtectedRoute />}>
               <Route path={ROUTES.PROFILE} element={<Profile />} />
               <Route path={ROUTES.MY_BOOKINGS} element={<MyBookings />} />
+              <Route path={ROUTES.BOOKING} element={<Booking />} />
+              <Route path={ROUTES.PAYMENT} element={<Payment />} />
+              <Route path={ROUTES.PAYMENT_RESULT} element={<PaymentResult />} />
             </Route>
 
             {/* Error Pages */}

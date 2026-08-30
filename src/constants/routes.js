@@ -13,6 +13,8 @@ export const ROUTES = {
   FORGOT_PASSWORD: '/forgot-password',
   RESET_PASSWORD: '/reset-password',
   BOOKING: '/booking/:showtimeId',
+  PAYMENT: '/payment/:reservationId',
+  PAYMENT_RESULT: '/payment/result',
   UNAUTHORIZED: '/401',
   FORBIDDEN: '/403',
   NOT_FOUND: '/404',

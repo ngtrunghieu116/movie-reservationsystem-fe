@@ -1,4 +1,3 @@
-import React from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { Clock } from 'lucide-react';
 
@@ -40,7 +39,7 @@ const MovieNowShowingCard = ({ movie, showtimes = [] }) => {
     const sortedShowtimes = [...showtimes].sort((a, b) => new Date(a.startTime) - new Date(b.startTime));
 
     const handleSelectShowtime = (stId) => {
-        navigate(`/booking/${stId}`);
+        navigate(`/movies/${movie.id}?showtimeId=${stId}`);
     };
 
     return (
