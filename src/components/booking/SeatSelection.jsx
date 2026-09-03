@@ -44,8 +44,8 @@ export const SeatSelection = ({
 
         if (isSelected) {
             return {
-                style: 'bg-[#2563EB] border-[#60A5FA] text-white font-bold shadow-[0_0_12px_rgba(37,99,235,0.7)] ring-1 ring-[#60A5FA] scale-105 cursor-pointer',
-                isClickable: true, // Click để hủy chọn / release
+                style: 'bg-blue-600 border-blue-700 text-white font-bold shadow-md shadow-blue-500/20 scale-105 cursor-pointer',
+                isClickable: true,
                 icon: null,
                 tooltip: `${seat.rowName}${seat.seatNumber} (Ghế bạn chọn - ${(seat.price || 0).toLocaleString('vi-VN')} đ)`
             };
@@ -53,7 +53,7 @@ export const SeatSelection = ({
 
         if (seat.status === 'SOLD') {
             return {
-                style: 'bg-[#7F1D1D] border-[#7F1D1D] opacity-90 cursor-not-allowed',
+                style: 'bg-red-700 border-red-800 opacity-90 cursor-not-allowed text-white',
                 isClickable: false,
                 icon: <VietnamStar className="w-5 h-5 absolute inset-0 m-auto" />,
                 tooltip: `${seat.rowName}${seat.seatNumber} (Đã bán)`
@@ -62,9 +62,9 @@ export const SeatSelection = ({
 
         if (seat.status === 'HELD') {
             return {
-                style: 'bg-[#3F3F46] border-dashed border-[#71717A] text-[#94A3B8] cursor-not-allowed opacity-75',
+                style: 'bg-slate-300 border-dashed border-slate-400 text-slate-500 cursor-not-allowed opacity-75',
                 isClickable: false,
-                icon: <Lock className="w-3 h-3 text-amber-200/50 absolute inset-0 m-auto" />,
+                icon: <Lock className="w-3 h-3 text-slate-600 absolute inset-0 m-auto" />,
                 tooltip: `${seat.rowName}${seat.seatNumber} (Đang có người giữ chỗ)`
             };
         }
@@ -72,7 +72,7 @@ export const SeatSelection = ({
         // Trạng thái AVAILABLE
         if (seat.seatType === 'VIP') {
             return {
-                style: 'bg-[#F59E0B] border-[#FCD34D] text-[#171C24] font-bold hover:bg-[#FBBF24] hover:shadow-[0_0_8px_rgba(245,158,11,0.5)] cursor-pointer transition-all hover:scale-105',
+                style: 'bg-amber-400 border-amber-500 text-slate-900 font-bold hover:bg-amber-500 hover:shadow-xs cursor-pointer transition-all hover:scale-105',
                 isClickable: true,
                 icon: null,
                 tooltip: `${seat.rowName}${seat.seatNumber} (VIP - ${(seat.price || 0).toLocaleString('vi-VN')} đ)`
@@ -81,7 +81,7 @@ export const SeatSelection = ({
 
         if (seat.seatType === 'COUPLE') {
             return {
-                style: 'bg-[#E11D48] border-[#FB7185] text-white font-bold hover:bg-[#F43F5E] hover:shadow-[0_0_8px_rgba(225,29,72,0.5)] cursor-pointer transition-all hover:scale-105 min-w-[3.5rem]',
+                style: 'bg-rose-500 border-rose-600 text-white font-bold hover:bg-rose-600 hover:shadow-xs cursor-pointer transition-all hover:scale-105 min-w-[3.5rem]',
                 isClickable: true,
                 icon: null,
                 tooltip: `${seat.rowName}${seat.seatNumber} (Đôi - ${(seat.price || 0).toLocaleString('vi-VN')} đ)`
@@ -90,7 +90,7 @@ export const SeatSelection = ({
 
         // Standard
         return {
-            style: 'bg-[#252B34] border-[#343B46] text-[#D1D5DB] hover:bg-[#343B46] hover:border-[#4B5563] hover:text-white hover:shadow-[0_0_6px_rgba(255,255,255,0.15)] cursor-pointer transition-all hover:scale-105',
+            style: 'bg-slate-100 border-slate-300 text-slate-700 hover:bg-slate-200 hover:border-slate-400 cursor-pointer transition-all hover:scale-105 shadow-xs',
             isClickable: true,
             icon: null,
             tooltip: `${seat.rowName}${seat.seatNumber} (Thường - ${(seat.price || 0).toLocaleString('vi-VN')} đ)`
@@ -98,26 +98,26 @@ export const SeatSelection = ({
     };
 
     return (
-        <div className="w-full flex flex-col items-center py-6">
+        <div className="w-full flex flex-col items-center py-6 font-sans">
             
-            {/* 1. CINEMA SCREEN (Golden Trapezoid Perspective Glow matching mau.png) */}
+            {/* 1. CINEMA SCREEN */}
             <div className="w-full max-w-2xl mx-auto flex flex-col items-center mb-8 px-4">
                 <div className="w-full relative flex flex-col items-center">
                     {/* Perspective Trapezoid Screen */}
                     <div 
-                        className="w-full h-12 relative shadow-[0_15px_35px_rgba(245,158,11,0.25)]"
+                        className="w-full h-12 relative shadow-[0_15px_30px_rgba(245,158,11,0.2)]"
                         style={{
-                            background: 'linear-gradient(180deg, #F59E0B 0%, rgba(245, 158, 11, 0.4) 60%, transparent 100%)',
+                            background: 'linear-gradient(180deg, #F59E0B 0%, rgba(245, 158, 11, 0.3) 60%, transparent 100%)',
                             clipPath: 'polygon(0% 0%, 100% 0%, 90% 100%, 10% 100%)',
                             borderRadius: '4px'
                         }}
                     />
                     {/* Perspective Glow Effect */}
-                    <div className="w-4/5 h-2 bg-gradient-to-r from-transparent via-[#FCD34D] to-transparent opacity-70 blur-xs -mt-1" />
+                    <div className="w-4/5 h-2 bg-gradient-to-r from-transparent via-amber-300 to-transparent opacity-80 blur-xs -mt-1" />
                 </div>
 
                 {/* Room Name Label */}
-                <h3 className="text-sm sm:text-base font-bold text-[#F8FAFC] tracking-widest mt-4 uppercase">
+                <h3 className="text-sm sm:text-base font-bold text-slate-900 tracking-widest mt-4 uppercase">
                     {roomName || 'Phòng chiếu'}
                 </h3>
             </div>
@@ -128,7 +128,7 @@ export const SeatSelection = ({
                     {Object.entries(rows).map(([rowKey, rowSeats]) => (
                         <div key={rowKey} className="flex items-center space-x-2.5">
                             {/* Row Label Left */}
-                            <span className="w-5 text-right text-xs font-bold text-[#94A3B8]">
+                            <span className="w-5 text-right text-xs font-bold text-slate-500">
                                 {rowKey}
                             </span>
 
@@ -158,7 +158,7 @@ export const SeatSelection = ({
                             </div>
 
                             {/* Row Label Right */}
-                            <span className="w-5 text-left text-xs font-bold text-[#94A3B8]">
+                            <span className="w-5 text-left text-xs font-bold text-slate-500">
                                 {rowKey}
                             </span>
                         </div>
@@ -166,28 +166,28 @@ export const SeatSelection = ({
                 </div>
             </div>
 
-            {/* 3. SEAT LEGEND (Exact matching mau.png) */}
-            <div className="mt-4 pt-6 border-t border-[#2A323E]/80 w-full max-w-3xl flex flex-wrap items-center justify-center gap-5 sm:gap-7 text-xs text-[#CBD5E1]">
+            {/* 3. SEAT LEGEND */}
+            <div className="mt-4 pt-6 border-t border-slate-200/80 w-full max-w-3xl flex flex-wrap items-center justify-center gap-5 sm:gap-7 text-xs text-slate-700 font-medium">
                 <div className="flex items-center space-x-2">
-                    <span className="w-4 h-4 rounded bg-[#7F1D1D] border border-[#7F1D1D] flex items-center justify-center relative overflow-hidden">
+                    <span className="w-4 h-4 rounded bg-red-700 border border-red-800 flex items-center justify-center relative overflow-hidden">
                         <VietnamStar className="absolute" />
                     </span>
                     <span>Đã đặt</span>
                 </div>
                 <div className="flex items-center space-x-2">
-                    <span className="w-4 h-4 rounded bg-[#2563EB] border border-[#60A5FA] shadow-[0_0_6px_rgba(37,99,235,0.7)]" />
+                    <span className="w-4 h-4 rounded bg-blue-600 border border-blue-700 shadow-xs" />
                     <span>Ghế bạn chọn</span>
                 </div>
                 <div className="flex items-center space-x-2">
-                    <span className="w-4 h-4 rounded bg-[#252B34] border border-[#343B46]" />
+                    <span className="w-4 h-4 rounded bg-slate-100 border border-slate-300" />
                     <span>Ghế thường</span>
                 </div>
                 <div className="flex items-center space-x-2">
-                    <span className="w-4 h-4 rounded bg-[#F59E0B] border border-[#FCD34D]" />
+                    <span className="w-4 h-4 rounded bg-amber-400 border border-amber-500" />
                     <span>Ghế VIP</span>
                 </div>
                 <div className="flex items-center space-x-2">
-                    <span className="w-5 h-4 rounded bg-[#E11D48] border border-[#FB7185]" />
+                    <span className="w-5 h-4 rounded bg-rose-500 border border-rose-600" />
                     <span>Ghế đôi</span>
                 </div>
             </div>

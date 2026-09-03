@@ -1,4 +1,5 @@
-import { CreditCard, Clock, Loader2, AlertCircle, CheckCircle2 } from 'lucide-react';
+import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 export const PaymentPanel = ({
     reservationData,
@@ -7,6 +8,9 @@ export const PaymentPanel = ({
     isProcessingPayment = false,
     onPay = () => {}
 }) => {
+    const navigate = useNavigate();
+    const [isAgreed, setIsAgreed] = useState(true);
+
     if (!reservationData) return null;
 
     const {
@@ -23,127 +27,182 @@ export const PaymentPanel = ({
     };
 
     const isExpiringSoon = timeLeft > 0 && timeLeft < 120;
+    const itemsSubtotal = Number(ticketSubtotal || 0) + Number(fnbSubtotal || 0);
 
     return (
-        <div className="bg-[#121821] border border-[#2A323E] rounded-2xl p-6 sm:p-8 space-y-6 shadow-xl sticky top-24">
+        <div className="space-y-6">
             
-            {/* Header */}
-            <div className="flex items-center space-x-3 border-b border-[#2A323E] pb-5">
-                <div className="w-10 h-10 rounded-xl bg-[#E50914]/15 border border-[#E50914]/30 flex items-center justify-center flex-shrink-0">
-                    <CreditCard className="w-5 h-5 text-[#E50914]" />
-                </div>
-                <div>
-                    <h2 className="text-lg font-bold text-[#F8FAFC]">Thanh Toán</h2>
-                    <p className="text-xs text-[#94A3B8]">Chọn cổng thanh toán và hoàn tất đơn hàng</p>
-                </div>
-            </div>
-
-            {/* Countdown Box */}
+            {/* 1. Countdown Box (Pure text, no icon) */}
             <div className={`
                 p-3.5 rounded-xl border flex items-center justify-between text-xs transition-colors
                 ${isExpired
-                    ? 'bg-red-950/40 border-red-800/50 text-red-400'
+                    ? 'bg-red-50 border-red-200 text-red-700'
                     : isExpiringSoon
-                        ? 'bg-red-950/20 border-red-500/40 text-red-400'
-                        : 'bg-[#171C24] border-[#2A323E] text-[#CBD5E1]'
+                        ? 'bg-red-50 border-red-200 text-red-700'
+                        : 'bg-white border-slate-200/80 text-slate-700 shadow-xs'
                 }
             `}>
-                <div className="flex items-center space-x-2">
-                    <Clock className={`w-4 h-4 ${isExpired || isExpiringSoon ? 'text-[#E50914] animate-pulse' : 'text-[#F59E0B]'}`} />
-                    <span>{isExpired ? 'Đơn hàng đã hết hạn:' : 'Thời gian giữ chỗ còn lại:'}</span>
-                </div>
-                <span className={`font-mono text-base font-black tracking-wider ${isExpired || isExpiringSoon ? 'text-[#E50914]' : 'text-[#F59E0B]'}`}>
+                <span className="font-medium">
+                    {isExpired ? 'Đơn hàng đã hết hạn:' : 'Thời gian giữ chỗ còn lại:'}
+                </span>
+                <span className={`font-mono text-base font-bold tracking-wider ${isExpired || isExpiringSoon ? 'text-red-600' : 'text-amber-600'}`}>
                     {formatCountdown(timeLeft)}
                 </span>
             </div>
 
-            {/* Price Breakdown */}
-            <div className="space-y-3 bg-[#171C24] p-4.5 rounded-xl border border-[#252C38] text-xs">
-                <div className="flex items-center justify-between text-[#94A3B8]">
-                    <span>Tiền vé xem phim:</span>
-                    <span className="font-mono text-[#CBD5E1] font-semibold">
-                        {Number(ticketSubtotal || 0).toLocaleString('vi-VN')} đ
-                    </span>
-                </div>
-
-                <div className="flex items-center justify-between text-[#94A3B8]">
-                    <span>Tiền bắp nước (F&B):</span>
-                    <span className="font-mono text-[#CBD5E1] font-semibold">
-                        {Number(fnbSubtotal || 0).toLocaleString('vi-VN')} đ
-                    </span>
-                </div>
-
-                <div className="pt-3 border-t border-[#2A323E] flex items-center justify-between">
-                    <span className="text-sm font-bold text-white uppercase tracking-wide">Tổng Cộng:</span>
-                    <span className="text-xl sm:text-2xl font-black font-mono text-[#E50914] tracking-tight">
-                        {Number(totalAmount || 0).toLocaleString('vi-VN')} đ
-                    </span>
-                </div>
-            </div>
-
-            {/* Payment Method Selector */}
+            {/* 2. Phương thức thanh toán (No Icons) */}
             <div className="space-y-3">
-                <span className="text-xs text-[#94A3B8] uppercase tracking-wider font-semibold block">
+                <h3 className="text-base font-bold text-slate-900">
                     Phương thức thanh toán
-                </span>
+                </h3>
 
-                <div className="relative p-4 rounded-xl border-2 border-[#E50914] bg-[#1A1015]/60 shadow-[0_0_15px_rgba(229,9,20,0.12)] flex items-start space-x-3 cursor-pointer">
-                    <div className="mt-0.5">
-                        <CheckCircle2 className="w-5 h-5 text-[#E50914]" />
-                    </div>
-                    <div className="space-y-1 flex-1">
-                        <div className="flex items-center justify-between">
-                            <span className="text-sm font-bold text-white">Cổng VNPAY QR / Thẻ ATM & Quốc tế</span>
-                            <span className="text-[10px] px-2 py-0.5 rounded-md bg-[#0066B3]/20 border border-[#0066B3]/50 text-[#38BDF8] font-bold">
+                <div className="space-y-2">
+                    {/* VNPAY Radio Choice */}
+                    <div className="p-3.5 rounded-xl border border-red-600 bg-red-50/20 flex items-center justify-between cursor-pointer">
+                        <div className="flex items-center space-x-3">
+                            <input
+                                type="radio"
+                                id="payment-vnpay"
+                                name="paymentMethod"
+                                checked
+                                readOnly
+                                className="w-4 h-4 text-red-600 border-slate-300 focus:ring-red-500 cursor-pointer"
+                            />
+                            <label htmlFor="payment-vnpay" className="text-sm font-bold text-slate-900 cursor-pointer">
                                 VNPAY
-                            </span>
+                            </label>
                         </div>
-                        <p className="text-[11px] text-[#94A3B8] leading-relaxed">
-                            Quét mã VNPAY-QR trên Mobile Banking, thẻ ATM nội địa, hoặc thẻ quốc tế Visa / MasterCard / JCB.
-                        </p>
+                        <span className="text-[11px] text-slate-500 font-medium">
+                            QR Code, ATM, Quốc tế
+                        </span>
                     </div>
                 </div>
             </div>
 
-            {/* Expiration Error Notice */}
-            {isExpired && (
-                <div className="p-3.5 rounded-xl bg-red-950/40 border border-red-800/50 flex items-start space-x-2.5 text-xs text-red-300">
-                    <AlertCircle className="w-4 h-4 text-red-400 flex-shrink-0 mt-0.5" />
-                    <span>
-                        Đơn đặt vé này đã hết thời gian giữ chỗ. Vui lòng quay lại chọn suất chiếu và ghế mới.
-                    </span>
+            {/* 3. Khuyến mãi Section (No Icons) */}
+            <div className="space-y-3">
+                <h3 className="text-base font-bold text-slate-900">
+                    Khuyến mãi
+                </h3>
+
+                <div className="bg-white border border-slate-200/80 rounded-2xl p-4 space-y-3 shadow-xs text-xs">
+                    {/* Voucher row */}
+                    <div className="flex items-center justify-between">
+                        <div>
+                            <span className="font-bold text-slate-900 block text-xs sm:text-sm">Mã giảm giá</span>
+                            <span className="text-slate-500 text-[11px]">Chưa áp dụng mã nào</span>
+                        </div>
+                        <button
+                            type="button"
+                            className="px-3 py-1.5 rounded-lg bg-red-600 hover:bg-red-700 text-white text-xs font-semibold transition cursor-pointer shadow-xs"
+                        >
+                            Chọn voucher
+                        </button>
+                    </div>
+
+                    <div className="border-t border-slate-100" />
+
+                    {/* Point row */}
+                    <div className="flex items-center justify-between">
+                        <div>
+                            <span className="font-bold text-slate-900 block text-xs sm:text-sm">Đổi điểm tích luỹ</span>
+                            <span className="text-slate-500 text-[11px]">Hiện có 0 điểm</span>
+                        </div>
+                        <button
+                            type="button"
+                            disabled
+                            className="px-3 py-1.5 rounded-lg bg-slate-100 text-slate-400 text-xs font-semibold cursor-not-allowed border border-slate-200"
+                        >
+                            Đổi điểm
+                        </button>
+                    </div>
                 </div>
-            )}
+            </div>
 
-            {/* Payment Action Button */}
-            <button
-                type="button"
-                disabled={isExpired || isProcessingPayment}
-                onClick={onPay}
-                className={`
-                    w-full py-3.5 rounded-xl text-sm sm:text-base font-bold transition-all shadow-lg select-none flex items-center justify-center space-x-2
-                    ${isExpired || isProcessingPayment
-                        ? 'bg-[#252B34] text-[#64748B] cursor-not-allowed shadow-none border border-[#343B46]'
-                        : 'bg-[#E50914] text-white hover:bg-[#F5222D] shadow-[#E50914]/30 cursor-pointer'
-                    }
-                `}
-            >
-                {isProcessingPayment ? (
-                    <>
-                        <Loader2 className="w-4 h-4 animate-spin" />
-                        <span>Đang chuyển hướng sang VNPAY...</span>
-                    </>
-                ) : isExpired ? (
-                    <span>Đơn hàng đã hết hạn</span>
-                ) : (
-                    <span>THANH TOÁN NGAY</span>
-                )}
-            </button>
+            {/* 4. Chi phí Section (No Icons) */}
+            <div className="space-y-3">
+                <h3 className="text-base font-bold text-slate-900">
+                    Chi phí
+                </h3>
 
-            {/* Security Guarantee Note */}
-            <p className="text-center text-[11px] text-[#64748B]">
-                🔒 Giao dịch được mã hóa và bảo mật 100% qua cổng VNPAY
-            </p>
+                <div className="bg-white border border-slate-200/80 rounded-2xl p-4 sm:p-5 space-y-2.5 shadow-xs text-xs sm:text-sm">
+                    <div className="flex justify-between items-center text-slate-700">
+                        <span>Thanh toán</span>
+                        <span className="font-mono font-semibold text-slate-900">
+                            {Number(itemsSubtotal || 0).toLocaleString('vi-VN')}đ
+                        </span>
+                    </div>
+
+                    <div className="flex justify-between items-center text-slate-700">
+                        <span>Phí</span>
+                        <span className="font-mono text-slate-900">0đ</span>
+                    </div>
+
+                    <div className="flex justify-between items-center text-red-600">
+                        <span>Giảm giá (voucher)</span>
+                        <span className="font-mono font-semibold">0đ</span>
+                    </div>
+
+                    <div className="flex justify-between items-center text-slate-700">
+                        <span>Đổi điểm</span>
+                        <span className="font-mono text-slate-900">0đ</span>
+                    </div>
+
+                    <div className="border-t border-dashed border-slate-200 my-3" />
+
+                    <div className="flex justify-between items-center text-sm sm:text-base font-bold text-slate-900">
+                        <span>Tổng cộng</span>
+                        <span className="font-mono font-extrabold text-red-600 text-lg sm:text-xl">
+                            {Number(totalAmount || 0).toLocaleString('vi-VN')}đ
+                        </span>
+                    </div>
+                </div>
+            </div>
+
+            {/* 5. Checkbox Xác nhận Điều khoản */}
+            <div className="flex items-start space-x-2.5 text-xs text-slate-600 pt-1">
+                <input
+                    type="checkbox"
+                    id="agree-terms"
+                    checked={isAgreed}
+                    onChange={(e) => setIsAgreed(e.target.checked)}
+                    className="mt-0.5 w-4 h-4 text-red-600 rounded border-slate-300 focus:ring-red-500 cursor-pointer"
+                />
+                <label htmlFor="agree-terms" className="cursor-pointer leading-relaxed">
+                    Tôi xác nhận các thông tin đã chính xác và đồng ý với các <span className="text-red-600 underline font-medium">điều khoản & chính sách</span>
+                </label>
+            </div>
+
+            {/* 6. Action Buttons (No Icons) */}
+            <div className="space-y-3 pt-2">
+                <button
+                    type="button"
+                    onClick={onPay}
+                    disabled={isExpired || isProcessingPayment || !isAgreed}
+                    className={`
+                        w-full py-3.5 rounded-xl font-bold text-sm text-white shadow-md transition-all text-center
+                        ${isExpired || !isAgreed
+                            ? 'bg-slate-300 cursor-not-allowed shadow-none'
+                            : isProcessingPayment
+                                ? 'bg-red-600 opacity-80 cursor-wait'
+                                : 'bg-red-600 hover:bg-red-700 active:scale-[0.99] shadow-red-600/20 cursor-pointer'
+                        }
+                    `}
+                >
+                    {isProcessingPayment ? 'Đang chuyển sang VNPAY...' : 'Thanh toán'}
+                </button>
+
+                <div className="text-center">
+                    <button
+                        type="button"
+                        onClick={() => navigate(-1)}
+                        className="text-xs font-semibold text-slate-600 hover:text-slate-900 transition-colors cursor-pointer py-1"
+                    >
+                        Quay lại
+                    </button>
+                </div>
+            </div>
+
         </div>
     );
 };

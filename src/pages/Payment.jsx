@@ -1,6 +1,5 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
-import { ArrowLeft, AlertCircle, Loader2, RefreshCw } from 'lucide-react';
 import { reservationApi } from '../api/reservationApi';
 import { paymentApi } from '../api/paymentApi';
 import { OrderSummary } from '../components/payment/OrderSummary';
@@ -39,10 +38,10 @@ export const Payment = () => {
             const data = await reservationApi.reviewReservation(reservationId);
             setReservationData(data);
 
-            // If already confirmed, redirect to My Bookings
+            // If already confirmed, redirect to My Bookings / Profile
             if (data.status === 'CONFIRMED') {
                 toast.success('Đơn hàng này đã được thanh toán thành công.');
-                navigate(ROUTES.MY_BOOKINGS);
+                navigate('/profile?tab=bookings');
                 return;
             }
 
@@ -135,26 +134,25 @@ export const Payment = () => {
     };
 
     return (
-        <div className="min-h-screen bg-[#0B0F14] text-[#F8FAFC] pb-16 font-sans selection:bg-[#E50914] selection:text-white">
+        <div className="min-h-screen bg-slate-50 text-slate-900 pb-16 font-sans">
             
-            {/* Top Bar with Back Button & Breadcrumbs */}
-            <div className="w-full bg-[#0F141B] border-b border-[#2A323E] px-4 sm:px-8 py-3.5 sticky top-0 z-40 backdrop-blur-md">
+            {/* Top Navigation / Breadcrumbs (No Icons) */}
+            <div className="w-full bg-white border-b border-slate-200 px-4 sm:px-8 py-3.5 sticky top-0 z-40 shadow-xs">
                 <div className="max-w-7xl mx-auto flex items-center justify-between">
                     <button
                         type="button"
                         onClick={() => navigate(-1)}
-                        className="flex items-center space-x-2 text-xs sm:text-sm font-semibold text-[#94A3B8] hover:text-white transition-colors cursor-pointer"
+                        className="text-xs sm:text-sm font-semibold text-slate-600 hover:text-slate-900 transition-colors cursor-pointer"
                     >
-                        <ArrowLeft className="w-4 h-4" />
-                        <span>Quay lại</span>
+                        Quay lại
                     </button>
 
-                    <div className="flex items-center space-x-2 text-xs text-[#CBD5E1]">
-                        <Link to={ROUTES.HOME} className="hover:text-white transition-colors">Trang chủ</Link>
-                        <span className="text-[#3A4556]">/</span>
-                        <span className="text-[#94A3B8]">Đặt vé</span>
-                        <span className="text-[#3A4556]">/</span>
-                        <span className="text-[#E50914] font-bold">Thanh toán</span>
+                    <div className="flex items-center space-x-2 text-xs text-slate-500">
+                        <Link to={ROUTES.HOME} className="hover:text-slate-900 transition-colors">Trang chủ</Link>
+                        <span className="text-slate-300">/</span>
+                        <span>Đặt vé</span>
+                        <span className="text-slate-300">/</span>
+                        <span className="text-red-600 font-bold">Thanh toán</span>
                     </div>
                 </div>
             </div>
@@ -164,32 +162,29 @@ export const Payment = () => {
                 
                 {/* Loading State */}
                 {isLoading && (
-                    <div className="flex flex-col items-center justify-center min-h-[450px] bg-[#121821] rounded-2xl border border-[#2A323E]">
-                        <Loader2 className="w-10 h-10 animate-spin text-[#E50914] mb-3" />
-                        <p className="text-[#94A3B8] text-sm font-medium">Đang tải thông tin thanh toán...</p>
+                    <div className="flex flex-col items-center justify-center min-h-[400px] bg-white rounded-2xl border border-slate-200/80 shadow-xs">
+                        <p className="text-slate-500 text-sm font-medium">Đang tải thông tin thanh toán...</p>
                     </div>
                 )}
 
                 {/* Error State */}
                 {!isLoading && isError && (
-                    <div className="max-w-lg mx-auto bg-[#121821] border border-[#7F1D1D]/40 rounded-2xl p-8 text-center space-y-4 shadow-xl">
-                        <AlertCircle className="w-12 h-12 text-[#E50914] mx-auto" />
-                        <h3 className="text-lg font-bold text-[#F8FAFC]">Lỗi Đơn Đặt Vé</h3>
-                        <p className="text-xs sm:text-sm text-[#94A3B8] leading-relaxed">
+                    <div className="max-w-lg mx-auto bg-white border border-red-200 rounded-2xl p-8 text-center space-y-4 shadow-xs">
+                        <h3 className="text-lg font-bold text-slate-900">Lỗi Đơn Đặt Vé</h3>
+                        <p className="text-xs sm:text-sm text-slate-500 leading-relaxed">
                             {errorMessage}
                         </p>
                         <div className="flex items-center justify-center space-x-3 pt-2">
                             <button
                                 type="button"
                                 onClick={fetchReservationReview}
-                                className="px-4 py-2 rounded-xl bg-[#1A222D] hover:bg-[#252E3D] text-white text-xs font-bold transition flex items-center space-x-1.5 border border-[#2A323E] cursor-pointer"
+                                className="px-4 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold transition border border-slate-200 cursor-pointer"
                             >
-                                <RefreshCw className="w-3.5 h-3.5" />
-                                <span>Thử lại</span>
+                                Thử lại
                             </button>
                             <Link
                                 to={ROUTES.MOVIES}
-                                className="px-4 py-2 rounded-xl bg-[#E50914] hover:bg-[#F5222D] text-white text-xs font-bold transition shadow-md shadow-[#E50914]/25"
+                                className="px-4 py-2 rounded-xl bg-red-600 hover:bg-red-700 text-white text-xs font-bold transition shadow-md shadow-red-600/20"
                             >
                                 Xem phim khác
                             </Link>
@@ -201,14 +196,11 @@ export const Payment = () => {
                 {!isLoading && !isError && reservationData && (
                     <div className="space-y-6">
                         
-                        {/* Page Title */}
-                        <div>
-                            <h1 className="text-2xl sm:text-3xl font-extrabold text-[#F8FAFC] tracking-tight">
-                                Xác Nhận & Thanh Toán
+                        {/* Movie Header Title */}
+                        <div className="border-b border-slate-200/80 pb-4">
+                            <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight uppercase">
+                                {reservationData.movieTitle || 'Xác Nhận & Thanh Toán'}
                             </h1>
-                            <p className="text-xs sm:text-sm text-[#94A3B8] mt-1">
-                                Vui lòng kiểm tra lại thông tin đơn hàng trước khi chuyển tiếp sang cổng thanh toán VNPAY.
-                            </p>
                         </div>
 
                         {/* 2 Columns: OrderSummary (Left) & PaymentPanel (Right) */}

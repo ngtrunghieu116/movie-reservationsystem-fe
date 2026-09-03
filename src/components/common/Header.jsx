@@ -92,14 +92,6 @@ const Header = () => {
             {user ? (
               <div className="flex items-center gap-3">
                 <Link
-                  to={ROUTES.MY_BOOKINGS}
-                  className="hidden md:flex items-center gap-1.5 text-xs font-semibold text-slate-600 hover:text-primary px-3 py-1.5 rounded-lg hover:bg-slate-100 transition-colors"
-                >
-                  <Ticket size={16} />
-                  <span>Vé của tôi</span>
-                </Link>
-
-                <Link
                   to={ROUTES.PROFILE}
                   className="flex items-center gap-2 text-sm text-slate-700 hover:text-slate-900 bg-slate-100 hover:bg-slate-200/80 px-3 py-1.5 rounded-full transition-all"
                 >

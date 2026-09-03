@@ -100,43 +100,42 @@ const MovieDetail = () => {
     const [showtimeSelectedAt, setShowtimeSelectedAt] = useState(null);
     const [timeLeft, setTimeLeft] = useState(null);
 
-    // Handle Expired Hold / Showtime Session
-    const handleExpired = useCallback(async () => {
+    const handleExpired = useCallback(() => {
+        setTimeLeft(0);
+        hookHandleExpired();
+        toast.error('Thời gian chọn ghế đã hết hạn (10 phút). Vui lòng chọn lại suất chiếu.');
+        setSelectedShowtime(null);
+        setShowtimeSelectedAt(null);
+        setCurrentStep(1);
         setReservationId(null);
         setReservationData(null);
-        setCurrentStep(1);
-        setShowtimeSelectedAt(null);
-        await hookHandleExpired();
     }, [hookHandleExpired]);
 
     useEffect(() => {
         if (!selectedShowtime || !showtimeSelectedAt) {
-            // eslint-disable-next-line react-hooks/set-state-in-effect
             setTimeLeft(null);
             return;
         }
 
-        const calculateRemaining = () => {
-            // Target is expiresAt (if provided by backend hold) or 10 mins from showtime selection
-            const expTime = expiresAt
-                ? new Date(expiresAt).getTime()
-                : showtimeSelectedAt + 10 * 60 * 1000;
+        const targetExpiry = expiresAt
+            ? new Date(expiresAt).getTime()
+            : showtimeSelectedAt + 10 * 60 * 1000;
+
+        const updateTimer = () => {
             const now = Date.now();
-            return Math.max(0, Math.floor((expTime - now) / 1000));
+            const diff = Math.max(0, Math.floor((targetExpiry - now) / 1000));
+            setTimeLeft(diff);
+            return diff;
         };
 
-        const initial = calculateRemaining();
-        setTimeLeft(initial);
-
+        const initial = updateTimer();
         if (initial <= 0) {
             handleExpired();
             return;
         }
 
         const timer = setInterval(() => {
-            const remaining = calculateRemaining();
-            setTimeLeft(remaining);
-
+            const remaining = updateTimer();
             if (remaining <= 0) {
                 clearInterval(timer);
                 handleExpired();
@@ -267,7 +266,6 @@ const MovieDetail = () => {
         if (currentStep === 2) {
             setCurrentStep(1);
         } else if (currentStep === 1) {
-            // Quay trở lại về phần chọn suất chiếu, đồng thời hủy giữ ghế và nhả lại cho khách khác
             if (selectedSeats.length > 0) {
                 await releaseSeats();
             }
@@ -285,34 +283,34 @@ const MovieDetail = () => {
     // 7. Loading / Error States for Movie
     if (isMovieLoading) {
         return (
-            <div className="w-full min-h-[calc(100vh-5rem)] bg-[#0B0F14] flex flex-col justify-center items-center py-20 text-white">
-                <div className="w-12 h-12 border-4 border-[#E50914] border-t-transparent rounded-full animate-spin mb-4" />
-                <p className="text-[#94A3B8] text-sm font-medium">Đang tải thông tin phim...</p>
+            <div className="w-full min-h-[calc(100vh-5rem)] bg-slate-50 flex flex-col justify-center items-center py-20 text-slate-900">
+                <div className="w-12 h-12 border-4 border-red-600 border-t-transparent rounded-full animate-spin mb-4" />
+                <p className="text-slate-500 text-sm font-medium">Đang tải thông tin phim...</p>
             </div>
         );
     }
 
     if (isMovieError || !movie) {
         return (
-            <div className="w-full min-h-[calc(100vh-5rem)] bg-[#0B0F14] flex items-center justify-center p-6 text-white">
-                <div className="max-w-md w-full bg-[#121821] rounded-3xl p-8 border border-[#2A323E] shadow-xl text-center space-y-4">
-                    <div className="w-14 h-14 bg-[#E50914]/10 text-[#E50914] rounded-2xl flex items-center justify-center mx-auto">
+            <div className="w-full min-h-[calc(100vh-5rem)] bg-slate-50 flex items-center justify-center p-6 text-slate-900">
+                <div className="max-w-md w-full bg-white rounded-3xl p-8 border border-slate-200/80 shadow-xl text-center space-y-4">
+                    <div className="w-14 h-14 bg-red-50 text-red-600 rounded-2xl flex items-center justify-center mx-auto">
                         <AlertCircle className="w-8 h-8" />
                     </div>
-                    <h2 className="text-xl font-bold text-[#F8FAFC]">Không tìm thấy phim</h2>
-                    <p className="text-sm text-[#94A3B8]">
+                    <h2 className="text-xl font-bold text-slate-900">Không tìm thấy phim</h2>
+                    <p className="text-sm text-slate-500">
                         {movieError || 'Phim bạn đang tìm kiếm không tồn tại hoặc đã bị gỡ bỏ.'}
                     </p>
                     <div className="pt-2 flex justify-center gap-3">
                         <button
                             onClick={refetchMovie}
-                            className="px-5 py-2.5 bg-[#171C24] hover:bg-[#252B34] text-[#CBD5E1] rounded-xl text-sm font-semibold transition border border-[#2A323E]"
+                            className="px-5 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl text-sm font-semibold transition border border-slate-200 cursor-pointer"
                         >
                             Thử lại
                         </button>
                         <Link
                             to={ROUTES.HOME}
-                            className="px-5 py-2.5 bg-[#E50914] hover:bg-[#F5222D] text-white rounded-xl text-sm font-semibold shadow-md transition flex items-center gap-2"
+                            className="px-5 py-2.5 bg-red-600 hover:bg-red-700 text-white rounded-xl text-sm font-semibold shadow-md transition flex items-center gap-2 shadow-red-600/20"
                         >
                             <ArrowLeft className="w-4 h-4" />
                             <span>Về Trang Chủ</span>
@@ -324,7 +322,7 @@ const MovieDetail = () => {
     }
 
     return (
-        <div className="w-full min-h-screen bg-[#0B0F14] text-[#F8FAFC] pb-32">
+        <div className="w-full min-h-screen bg-slate-50 text-slate-900 pb-32 font-sans">
             
             {/* 1. Hero Header Section */}
             <MovieDetailHero 
@@ -357,13 +355,13 @@ const MovieDetail = () => {
                     
                     {/* Error loading seats */}
                     {!isSeatsLoading && isSeatsError && (
-                        <div className="p-8 rounded-2xl bg-[#121821] border border-[#7F1D1D]/40 text-center space-y-4 max-w-xl mx-auto">
-                            <AlertCircle className="w-10 h-10 text-[#E50914] mx-auto" />
-                            <h4 className="text-base font-bold text-[#F8FAFC]">Không thể tải sơ đồ ghế</h4>
-                            <p className="text-xs text-[#94A3B8]">{seatsError || 'Suất chiếu không khả dụng hoặc đã dừng bán trực tuyến.'}</p>
+                        <div className="p-8 rounded-2xl bg-white border border-red-200 text-center space-y-4 max-w-xl mx-auto shadow-xl">
+                            <AlertCircle className="w-10 h-10 text-red-600 mx-auto" />
+                            <h4 className="text-base font-bold text-slate-900">Không thể tải sơ đồ ghế</h4>
+                            <p className="text-xs text-slate-500">{seatsError || 'Suất chiếu không khả dụng hoặc đã dừng bán trực tuyến.'}</p>
                             <button
                                 onClick={() => refetchSeats(false)}
-                                className="px-5 py-2 rounded-xl bg-[#E50914] hover:bg-[#F5222D] text-white text-xs font-bold transition"
+                                className="px-5 py-2 rounded-xl bg-red-600 hover:bg-red-700 text-white text-xs font-bold transition shadow-md shadow-red-600/20 cursor-pointer"
                             >
                                 Thử lại
                             </button>
@@ -373,8 +371,8 @@ const MovieDetail = () => {
                     {/* Loading seats */}
                     {isSeatsLoading && (
                         <div className="py-16 text-center space-y-3">
-                            <div className="w-10 h-10 border-3 border-[#E50914] border-t-transparent rounded-full animate-spin mx-auto" />
-                            <p className="text-sm text-[#94A3B8] font-medium">Đang tải phòng chiếu & sơ đồ ghế...</p>
+                            <div className="w-10 h-10 border-3 border-red-600 border-t-transparent rounded-full animate-spin mx-auto" />
+                            <p className="text-sm text-slate-500 font-medium">Đang tải phòng chiếu & sơ đồ ghế...</p>
                         </div>
                     )}
 

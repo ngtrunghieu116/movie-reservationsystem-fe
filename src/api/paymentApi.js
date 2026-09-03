@@ -18,6 +18,14 @@ export const paymentApi = {
      */
     getVnPayReturn: (params) => {
         return axiosClient.get('/payments/vnpay/return', { params });
+    },
+
+    /**
+     * Lấy chi tiết trạng thái thanh toán và thông tin vé theo orderId
+     * @param {string} orderId
+     */
+    getPaymentStatus: (orderId) => {
+        return axiosClient.get('/payments/status', { params: { orderId } });
     }
 };
 

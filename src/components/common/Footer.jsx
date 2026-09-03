@@ -41,7 +41,7 @@ const Footer = () => {
               <li><Link to={ROUTES.LOGIN} className="hover:text-white transition-colors">Đăng nhập</Link></li>
               <li><Link to={ROUTES.REGISTER} className="hover:text-white transition-colors">Đăng ký tài khoản</Link></li>
               <li><Link to={ROUTES.PROFILE} className="hover:text-white transition-colors">Thông tin cá nhân</Link></li>
-              <li><Link to={ROUTES.MY_BOOKINGS} className="hover:text-white transition-colors">Lịch sử đặt vé</Link></li>
+              <li><Link to="/profile?tab=bookings" className="hover:text-white transition-colors">Lịch sử giao dịch</Link></li>
             </ul>
           </div>
 

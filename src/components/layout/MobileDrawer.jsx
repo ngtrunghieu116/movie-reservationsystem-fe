@@ -65,14 +65,6 @@ const MobileDrawer = ({ isOpen, onClose, navLinks, user, onLogout }) => {
             <>
               <hr className="my-3 border-slate-100" />
               <Link
-                to={ROUTES.MY_BOOKINGS}
-                onClick={onClose}
-                className="flex items-center gap-2.5 px-3 py-2.5 rounded-lg text-sm font-semibold text-slate-700 hover:bg-slate-100 hover:text-primary transition-colors"
-              >
-                <Ticket size={18} />
-                <span>Vé của tôi</span>
-              </Link>
-              <Link
                 to={ROUTES.PROFILE}
                 onClick={onClose}
                 className="flex items-center gap-2.5 px-3 py-2.5 rounded-lg text-sm font-semibold text-slate-700 hover:bg-slate-100 hover:text-primary transition-colors"

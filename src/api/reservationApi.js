@@ -59,6 +59,13 @@ export const reservationApi = {
      */
     getBookingHistory: () => {
         return axiosClient.get('/reservations/history');
+    },
+
+    /**
+     * Lấy lịch sử đặt vé chi tiết của người dùng hiện tại (cho User FE)
+     */
+    getMyBookingHistory: () => {
+        return axiosClient.get('/reservations/my-history');
     }
 };
 

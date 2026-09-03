@@ -16,6 +16,7 @@ import Profile from './pages/Profile';
 import Booking from './pages/Booking';
 import Payment from './pages/Payment';
 import PaymentResult from './pages/PaymentResult';
+import PaymentStatusDetail from './pages/PaymentStatusDetail';
 
 import Login from './pages/Login';
 import Register from './pages/Register';
@@ -58,7 +59,8 @@ function App() {
               <Route path={ROUTES.MY_BOOKINGS} element={<MyBookings />} />
               <Route path={ROUTES.BOOKING} element={<Booking />} />
               <Route path={ROUTES.PAYMENT} element={<Payment />} />
-              <Route path={ROUTES.PAYMENT_RESULT} element={<PaymentResult />} />
+              <Route path={ROUTES.PAYMENT_RESULT} element={<PaymentStatusDetail />} />
+              <Route path={ROUTES.PAYMENT_STATUS} element={<PaymentStatusDetail />} />
             </Route>
 
             {/* Error Pages */}

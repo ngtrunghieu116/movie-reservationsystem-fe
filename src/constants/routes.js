@@ -15,6 +15,7 @@ export const ROUTES = {
   BOOKING: '/booking/:showtimeId',
   PAYMENT: '/payment/:reservationId',
   PAYMENT_RESULT: '/payment/result',
+  PAYMENT_STATUS: '/payment/status',
   UNAUTHORIZED: '/401',
   FORBIDDEN: '/403',
   NOT_FOUND: '/404',
