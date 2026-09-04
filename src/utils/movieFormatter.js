@@ -7,7 +7,8 @@ export const movieFormatter = {
     },
 
     formatRating: (rating) => {
-        if (!rating) return 'Chưa có đánh giá';
-        return `⭐ ${Number(rating).toFixed(1)}/10`;
+        const num = Number(rating);
+        if (isNaN(num) || num <= 0) return '(5.0/5.0)';
+        return `(${num.toFixed(1)}/5.0)`;
     }
 };

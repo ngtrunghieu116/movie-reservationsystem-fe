@@ -11,6 +11,8 @@ import TheaterList from './pages/TheaterList';
 import TicketPrices from './pages/TicketPrices';
 import About from './pages/About';
 import FoodPreview from './pages/FoodPreview';
+import ArticleList from './pages/ArticleList';
+import ArticleDetail from './pages/ArticleDetail';
 import MyBookings from './pages/MyBookings';
 import Profile from './pages/Profile';
 import Booking from './pages/Booking';
@@ -44,6 +46,8 @@ function App() {
             <Route path={ROUTES.TICKET_PRICES} element={<TicketPrices />} />
             <Route path={ROUTES.ABOUT} element={<About />} />
             <Route path={ROUTES.FOOD_PREVIEW} element={<FoodPreview />} />
+            <Route path={ROUTES.ARTICLES} element={<ArticleList />} />
+            <Route path={ROUTES.ARTICLE_DETAIL} element={<ArticleDetail />} />
 
             {/* Guest Only Routes */}
             <Route element={<GuestRoute />}>

@@ -1,8 +1,10 @@
-import React, { memo } from 'react';
+import React, { memo, useState, useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Badge from '../ui/Badge';
 import Button from '../ui/Button';
 import posterPlaceholder from '../../assets/images/poster-placeholder.svg';
+import { Star } from 'lucide-react';
+import reviewApi from '../../api/reviewApi';
 
 const MovieCard = memo(({ movie }) => {
     const navigate = useNavigate();
@@ -18,6 +20,29 @@ const MovieCard = memo(({ movie }) => {
         genres,
         rating
     } = movie;
+
+    const [ratingSummary, setRatingSummary] = useState(null);
+
+    useEffect(() => {
+        let isMounted = true;
+        if (id) {
+            reviewApi.getMovieRatingSummary(id)
+                .then(res => {
+                    if (isMounted && res) {
+                        setRatingSummary(res);
+                    }
+                })
+                .catch(() => {});
+        }
+        return () => { isMounted = false; };
+    }, [id]);
+
+    const displayRating = useMemo(() => {
+        if (ratingSummary && ratingSummary.averageRating !== undefined && ratingSummary.averageRating !== null) {
+            return `(${Number(ratingSummary.averageRating).toFixed(1)}/5.0)`;
+        }
+        return rating || '(5.0/5.0)';
+    }, [ratingSummary, rating]);
 
     const handleClick = () => {
         navigate(`/movies/${id}`);
@@ -77,8 +102,9 @@ const MovieCard = memo(({ movie }) => {
                     <span className="whitespace-nowrap">{duration}</span>
                 </div>
                 
-                <div className="text-xs font-semibold text-amber-600">
-                    {rating}
+                <div className="text-xs font-semibold text-amber-600 flex items-center gap-1">
+                    <Star size={13} className="fill-amber-400 text-amber-400 flex-shrink-0" />
+                    <span>{displayRating}</span>
                 </div>
             </div>
         </div>
