@@ -1,5 +1,6 @@
-import React, { useState } from 'react';
-import { Play, ChevronRight, ChevronUp } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { Play, ChevronRight, ChevronUp, Star } from 'lucide-react';
+import reviewApi from '../../api/reviewApi';
 
 const AGE_RATING_CONFIG = {
     P: { label: 'P', color: 'text-emerald-400 bg-emerald-500/10 border-emerald-500/20', desc: 'Phổ biến cho mọi lứa tuổi' },
@@ -14,6 +15,15 @@ const AGE_RATING_CONFIG = {
 
 const MovieDetailHero = ({ movie, onOpenTrailer }) => {
     const [isDescriptionExpanded, setIsDescriptionExpanded] = useState(false);
+    const [ratingSummary, setRatingSummary] = useState(null);
+
+    useEffect(() => {
+        if (movie?.id) {
+            reviewApi.getMovieRatingSummary(movie.id)
+                .then(data => setRatingSummary(data))
+                .catch(err => console.error('Lỗi khi tải điểm đánh giá hero:', err));
+        }
+    }, [movie?.id]);
 
     if (!movie) return null;
 
@@ -38,15 +48,29 @@ const MovieDetailHero = ({ movie, onOpenTrailer }) => {
                 <div className="flex flex-col md:flex-row items-start gap-8 lg:gap-12">
                     
                     {/* Left: Poster Card (Main Visual Emphasis, 220-250px desktop) */}
-                    <div className="flex-shrink-0 mx-auto md:mx-0 w-52 sm:w-60 lg:w-64">
-                        <div className="relative rounded-2xl overflow-hidden shadow-2xl shadow-black/80 border border-slate-700/60 bg-slate-900 group">
+                    <div className="flex-shrink-0 w-full md:w-[240px] lg:w-[260px] mx-auto md:mx-0 max-w-[260px]">
+                        <div className="group relative rounded-2xl overflow-hidden shadow-2xl border border-slate-700/80 aspect-[2/3] bg-slate-900">
                             <img 
                                 src={movie.poster} 
-                                alt={movie.title} 
-                                className="w-full aspect-[2/3] object-cover transition duration-500 group-hover:scale-105"
+                                alt={movie.title}
+                                className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
                             />
-                            {/* Status Tag Overlay */}
-                            <div className="absolute top-3 left-3">
+
+                            {/* Play Trailer Overlay Button on Poster */}
+                            {movie.trailerUrl && (
+                                <button
+                                    onClick={onOpenTrailer}
+                                    className="absolute inset-0 bg-black/40 backdrop-blur-[2px] opacity-0 group-hover:opacity-100 transition-all duration-300 flex items-center justify-center cursor-pointer"
+                                    aria-label="Xem Trailer"
+                                >
+                                    <div className="w-14 h-14 rounded-full bg-red-600/90 text-white flex items-center justify-center shadow-lg shadow-red-600/50 transform scale-90 group-hover:scale-100 transition-transform">
+                                        <Play className="w-6 h-6 fill-white ml-0.5" />
+                                    </div>
+                                </button>
+                            )}
+
+                            {/* Status Badge in Top Left */}
+                            <div className="absolute top-3 left-3 flex flex-col gap-1.5 z-10">
                                 <span className={`px-3 py-1 rounded-full text-[11px] font-extrabold tracking-wider uppercase backdrop-blur-md border shadow-md ${
                                     isComingSoon 
                                         ? 'bg-amber-500/90 text-amber-950 border-amber-400' 
@@ -71,6 +95,15 @@ const MovieDetailHero = ({ movie, onOpenTrailer }) => {
                             <span className="px-2.5 py-0.5 bg-red-600 text-white font-bold text-xs rounded-md uppercase tracking-wide border border-red-500 shadow-sm">
                                 2D
                             </span>
+
+                            {/* Rating Star Badge */}
+                            {ratingSummary && (
+                                <div className="flex items-center gap-1.5 bg-amber-500/15 border border-amber-500/30 px-3 py-0.5 rounded-full text-xs text-amber-400 font-bold backdrop-blur-xs shadow-xs">
+                                    <Star size={13} className="fill-amber-400 text-amber-400" />
+                                    <span>{ratingSummary.averageRating ? ratingSummary.averageRating.toFixed(1) : '0.0'} / 5</span>
+                                    <span className="text-slate-400 font-normal">({ratingSummary.totalReviews || 0} đánh giá)</span>
+                                </div>
+                            )}
                         </div>
 
                         {movie.titleEn && (

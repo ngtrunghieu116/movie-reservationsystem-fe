@@ -25,7 +25,7 @@ const Home = () => {
     // 2. memo
     const heroMovies = useMemo(() => {
         if (!nowShowingMovies || nowShowingMovies.length === 0) return [];
-        return nowShowingMovies.slice(0, 4);
+        return nowShowingMovies.slice(0, 8);
     }, [nowShowingMovies]);
 
     const {

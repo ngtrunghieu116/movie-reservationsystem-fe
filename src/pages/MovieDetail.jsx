@@ -11,6 +11,7 @@ import SeatSelection from '../components/booking/SeatSelection';
 import ComboSelection from '../components/booking/ComboSelection';
 import BookingSummary from '../components/booking/BookingSummary';
 import TrailerModal from '../components/movie/TrailerModal';
+import MovieReviewsSection from '../components/review/MovieReviewsSection';
 
 import { AlertCircle, ArrowLeft } from 'lucide-react';
 import ROUTES from '../constants/routes';
@@ -416,7 +417,12 @@ const MovieDetail = () => {
                 />
             )}
 
-            {/* 5. Trailer Modal */}
+            {/* 5. User Reviews & Rating Section */}
+            <div className="px-4 sm:px-6 lg:px-8 pb-16">
+                <MovieReviewsSection movieId={movie.id} movieTitle={movie.title} />
+            </div>
+
+            {/* 6. Trailer Modal */}
             <TrailerModal 
                 isOpen={isTrailerOpen}
                 onClose={() => setIsTrailerOpen(false)}

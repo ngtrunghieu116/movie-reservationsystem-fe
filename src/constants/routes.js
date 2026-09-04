@@ -7,6 +7,8 @@ export const ROUTES = {
   ABOUT: '/about',
   MY_BOOKINGS: '/my-bookings',
   FOOD_PREVIEW: '/food-preview',
+  ARTICLES: '/articles',
+  ARTICLE_DETAIL: '/articles/:id',
   PROFILE: '/profile',
   LOGIN: '/login',
   REGISTER: '/register',
