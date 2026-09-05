@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Play, ChevronRight, ChevronUp, Star } from 'lucide-react';
 import reviewApi from '../../api/reviewApi';
+import posterPlaceholder from '../../assets/images/poster-placeholder.svg';
 
 const AGE_RATING_CONFIG = {
     P: { label: 'P', color: 'text-emerald-400 bg-emerald-500/10 border-emerald-500/20', desc: 'Phổ biến cho mọi lứa tuổi' },
@@ -53,6 +54,10 @@ const MovieDetailHero = ({ movie, onOpenTrailer }) => {
                             <img 
                                 src={movie.poster} 
                                 alt={movie.title}
+                                onError={(e) => {
+                                    e.currentTarget.onerror = null;
+                                    e.currentTarget.src = posterPlaceholder;
+                                }}
                                 className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
                             />
 

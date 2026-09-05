@@ -21,7 +21,7 @@ const HeroCarousel = ({
     if (isError || !movies || movies.length === 0) {
         return (
             <div className="w-full px-2 sm:px-2.5 pt-2">
-                <div className="w-full h-[calc(100vh-64px)] min-h-[700px] max-h-[850px] rounded-2xl bg-gradient-to-br from-slate-900 to-slate-950 flex items-center justify-center">
+                <div className="w-full h-[420px] sm:h-[480px] lg:h-[520px] rounded-2xl bg-gradient-to-br from-slate-900 to-slate-950 flex items-center justify-center">
                     <div className="text-center text-white space-y-2">
                         <h2 className="text-2xl font-bold">Chào mừng đến với CineMind</h2>
                         <p className="text-slate-400">Hiện chưa có phim đang chiếu nổi bật.</p>
@@ -52,7 +52,7 @@ const HeroCarousel = ({
         <div className="w-full px-2 sm:px-2.5 pt-2">
             {/* Slideshow (width: 100% of container) */}
             <div
-                className="relative w-full h-[calc(100vh-64px)] min-h-[700px] max-h-[850px] overflow-hidden rounded-2xl group bg-slate-950 cursor-pointer select-none"
+                className="relative w-full h-[420px] sm:h-[480px] lg:h-[520px] overflow-hidden rounded-2xl group bg-slate-950 cursor-pointer select-none"
                 onClick={handleSlideClick}
                 onMouseEnter={() => onHoverChange?.(true)}
                 onMouseLeave={() => onHoverChange?.(false)}
@@ -104,11 +104,10 @@ const HeroCarousel = ({
                                 e.stopPropagation();
                                 onSelect?.(idx);
                             }}
-                            className={`h-2 rounded-full transition-all duration-300 ${
-                                idx === currentIndex
+                            className={`h-2 rounded-full transition-all duration-300 ${idx === currentIndex
                                     ? 'bg-red-600 w-8 shadow-sm shadow-red-500'
                                     : 'bg-white/40 w-2 hover:bg-white/70'
-                            }`}
+                                }`}
                             aria-label={`Go to slide ${idx + 1}`}
                         />
                     ))}

@@ -1,5 +1,6 @@
 import { useNavigate, Link } from 'react-router-dom';
 import { Clock } from 'lucide-react';
+import posterPlaceholder from '../../assets/images/poster-placeholder.svg';
 
 const AGE_RATING_WARNING_TEXT = {
     P: 'Phim được phép phổ biến đến người xem ở mọi độ tuổi',
@@ -51,6 +52,10 @@ const MovieNowShowingCard = ({ movie, showtimes = [] }) => {
                     <img 
                         src={movie.poster} 
                         alt={movie.title} 
+                        onError={(e) => {
+                            e.currentTarget.onerror = null;
+                            e.currentTarget.src = posterPlaceholder;
+                        }}
                         className="w-full h-full object-cover group-hover:scale-105 transition duration-500"
                     />
                 </Link>

@@ -2,7 +2,7 @@ import { movieFormatter } from './movieFormatter';
 import posterPlaceholder from '../assets/images/poster-placeholder.svg';
 
 const getFullImageUrl = (path) => {
-    if (!path) return posterPlaceholder;
+    if (!path || path.includes('default-poster.jpg') || path.includes('no-poster')) return posterPlaceholder;
     if (path.startsWith('http://') || path.startsWith('https://') || path.startsWith('data:')) {
         return path;
     }
