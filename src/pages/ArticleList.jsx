@@ -99,7 +99,7 @@ const ArticleList = () => {
                                             {item.title}
                                         </h2>
                                         <p className="text-sm text-slate-500 line-clamp-3 leading-relaxed">
-                                            {item.shortDescription}
+                                            {item.shortDescription ? item.shortDescription.replace(/<[^>]*>?/gm, '').trim() : ''}
                                         </p>
                                     </div>
 

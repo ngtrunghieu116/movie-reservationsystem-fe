@@ -42,16 +42,15 @@ export const getUserSessions = async (userId = null) => {
     if (!uid) {
         try {
             const user = JSON.parse(localStorage.getItem('user') || '{}');
-            uid = user.id || null;
+            uid = user?.id || null;
         } catch {
             uid = null;
         }
     }
-    const params = {};
-    if (uid) {
-        params.user_id = uid;
+    if (!uid) {
+        return { sessions: [], total: 0, stats: {} };
     }
-    const response = await axios.get(`${CHATBOT_API_URL}/api/chat/sessions`, { params });
+    const response = await axios.get(`${CHATBOT_API_URL}/api/chat/sessions`, { params: { user_id: uid } });
     return response.data;
 };
 

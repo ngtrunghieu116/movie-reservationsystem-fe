@@ -64,29 +64,38 @@ const ArticleDetail = () => {
         );
     }
 
+    const cleanTextContent = (text) => {
+        if (!text) return '';
+        if (text.includes('<') && text.includes('>')) {
+            return text.replace(/<[^>]*>?/gm, '').trim();
+        }
+        return text;
+    };
+
     return (
-        <div className="w-full min-h-screen bg-slate-50 text-slate-900 py-10 px-4 sm:px-6 lg:px-8">
+        <div className="min-h-screen bg-slate-50/50 py-10 px-4 sm:px-6 lg:px-8">
             <article className="max-w-4xl mx-auto bg-white p-6 sm:p-10 rounded-3xl border border-slate-200 shadow-xs space-y-8">
-                
-                {/* Back button */}
+                {/* Back to List Button */}
                 <Link
                     to="/articles"
-                    className="inline-flex items-center gap-2 text-sm font-semibold text-slate-500 hover:text-red-600 transition group"
+                    className="inline-flex items-center gap-2 text-sm font-semibold text-slate-500 hover:text-red-600 transition"
                 >
-                    <ArrowLeft size={16} className="group-hover:-translate-x-1 transition-transform" />
+                    <ArrowLeft size={16} />
                     <span>Quay lại danh sách tin tức</span>
                 </Link>
 
                 {/* Article Header */}
-                <div className="space-y-4 pb-6 border-b border-slate-100">
-                    <h1 className="text-2xl sm:text-3xl md:text-4xl font-black text-slate-900 leading-tight">
-                        {article.title}
+                <div className="space-y-4 border-b border-slate-100 pb-6">
+                    <h1 className="text-2xl sm:text-4xl font-extrabold text-slate-900 leading-tight">
+                        {cleanTextContent(article.title)}
                     </h1>
 
-                    <div className="flex flex-wrap items-center gap-4 text-xs sm:text-sm text-slate-500">
-                        <span className="flex items-center gap-1.5 bg-slate-100 px-3 py-1 rounded-full font-medium text-slate-700">
-                            <Calendar size={14} className="text-red-600" />
-                            {article.createdAt ? new Date(article.createdAt).toLocaleDateString('vi-VN', {
+                    <div className="flex flex-wrap items-center gap-4 text-xs sm:text-sm text-slate-400 font-medium">
+                        <span className="flex items-center gap-1.5 bg-red-50 text-red-700 px-3 py-1 rounded-full font-bold">
+                            <Newspaper size={14} /> Tin Điện Ảnh
+                        </span>
+                        <span className="flex items-center gap-1.5">
+                            <Calendar size={14} /> {article.createdAt ? new Date(article.createdAt).toLocaleDateString('vi-VN', {
                                 year: 'numeric',
                                 month: 'long',
                                 day: 'numeric'
@@ -101,7 +110,7 @@ const ArticleDetail = () => {
                 {/* Short Description Quote Callout */}
                 <div className="p-4 sm:p-5 bg-red-50/70 border-l-4 border-red-600 rounded-r-2xl">
                     <p className="text-base sm:text-lg font-medium text-slate-800 italic leading-relaxed">
-                        {article.shortDescription}
+                        {cleanTextContent(article.shortDescription)}
                     </p>
                 </div>
 
@@ -118,7 +127,7 @@ const ArticleDetail = () => {
 
                 {/* Main Content Body */}
                 <div className="prose prose-slate max-w-none text-slate-700 leading-relaxed text-base sm:text-lg whitespace-pre-line space-y-4 font-normal">
-                    {article.content}
+                    {cleanTextContent(article.content)}
                 </div>
 
                 {/* Article Footer */}

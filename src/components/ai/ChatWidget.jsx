@@ -25,6 +25,7 @@ import {
 } from './chatApi';
 import MarkdownMessage from './MarkdownMessage';
 import { useAuth } from '../../context/AuthContext';
+import ROUTES from '../../constants/routes';
 
 const QUICK_PROMPTS = [
     { label: '🎬 Phim đang chiếu', prompt: 'Hôm nay rạp có những phim nào đang chiếu?' },
@@ -46,16 +47,52 @@ const ChatWidget = () => {
     const navigate = useNavigate();
     const { user } = useAuth() || {};
 
-    // Khởi tạo hoặc khôi phục sessionId từ sessionStorage
+    // Khôi phục và đồng bộ phiên trò chuyện theo trạng thái đăng nhập (User / Guest)
     useEffect(() => {
-        let storedSessionId = sessionStorage.getItem('cinemind_chat_session');
-        if (!storedSessionId) {
-            storedSessionId = 'sess_' + Math.random().toString(36).substring(2, 11);
-            sessionStorage.setItem('cinemind_chat_session', storedSessionId);
+        if (user?.id) {
+            // Khi người dùng đã đăng nhập:
+            // Khôi phục phiên chat của user này
+            const userKey = 'cinemind_user_session_' + user.id;
+            const storedUserSession = localStorage.getItem(userKey);
+            if (storedUserSession) {
+                setSessionId(storedUserSession);
+                localStorage.setItem('cinemind_chat_session', storedUserSession);
+                loadSessionMessages(storedUserSession);
+            } else {
+                getUserSessions(user.id).then((res) => {
+                    if (res.sessions && res.sessions.length > 0) {
+                        const latest = res.sessions[0];
+                        setSessionId(latest.id);
+                        localStorage.setItem(userKey, latest.id);
+                        localStorage.setItem('cinemind_chat_session', latest.id);
+                        loadSessionMessages(latest.id);
+                    } else {
+                        handleNewChat();
+                    }
+                }).catch(() => {
+                    handleNewChat();
+                });
+            }
+        } else {
+            // Khi chưa đăng nhập (hoặc sau khi Logout):
+            // Reset chat widget về trạng thái khách vãng lai, không lưu lộ tin nhắn của tài khoản
+            let guestSessionId = sessionStorage.getItem('cinemind_guest_session');
+            if (!guestSessionId) {
+                guestSessionId = 'sess_' + Math.random().toString(36).substring(2, 11);
+                sessionStorage.setItem('cinemind_guest_session', guestSessionId);
+            }
+            localStorage.removeItem('cinemind_chat_session');
+            setSessionId(guestSessionId);
+            setMessages([
+                {
+                    role: 'assistant',
+                    content: 'Xin chào! Em là **CineBot** 🎬 - trợ lý thông minh của rạp chiếu phim CineMind.\n\nEm có thể hỗ trợ bạn:\n- 🎬 **Khám phá phim** đang chiếu & sắp chiếu, tóm tắt nội dung\n- 📅 **Tra cứu lịch chiếu**, giá vé theo từng khung giờ\n- 💺 **Kiểm tra sơ đồ ghế** và hỗ trợ đặt vé giữ chỗ\n- 🍿 **Xem bảng giá combo** bắp rang & nước uống F&B\n- 🎟️ **Tra cứu vé** đã đặt chỗ\n\nBạn cần em hỗ trợ gì hôm nay ạ?',
+                    agent_name: 'discovery_agent'
+                }
+            ]);
+            setSessionsList([]);
         }
-        setSessionId(storedSessionId);
-        loadSessionMessages(storedSessionId);
-    }, []);
+    }, [user?.id]);
 
     useEffect(() => {
         if (isOpen && !showHistory) {
@@ -90,12 +127,18 @@ const ChatWidget = () => {
     };
 
     const fetchSessions = async () => {
+        if (!user?.id) {
+            setSessionsList([]);
+            setLoadingHistory(false);
+            return;
+        }
         setLoadingHistory(true);
         try {
-            const data = await getUserSessions(user?.id);
+            const data = await getUserSessions(user.id);
             setSessionsList(data.sessions || []);
         } catch (error) {
             console.error('Failed to load sessions:', error);
+            setSessionsList([]);
         } finally {
             setLoadingHistory(false);
         }
@@ -107,6 +150,10 @@ const ChatWidget = () => {
     };
 
     const handleSelectSession = (id) => {
+        if (user?.id) {
+            localStorage.setItem('cinemind_user_session_' + user.id, id);
+        }
+        localStorage.setItem('cinemind_chat_session', id);
         sessionStorage.setItem('cinemind_chat_session', id);
         setSessionId(id);
         setShowHistory(false);
@@ -159,6 +206,10 @@ const ChatWidget = () => {
 
     const handleNewChat = () => {
         const newId = 'sess_' + Math.random().toString(36).substring(2, 11);
+        if (user?.id) {
+            localStorage.setItem('cinemind_user_session_' + user.id, newId);
+        }
+        localStorage.setItem('cinemind_chat_session', newId);
         sessionStorage.setItem('cinemind_chat_session', newId);
         setSessionId(newId);
         setShowHistory(false);
@@ -277,6 +328,27 @@ const ChatWidget = () => {
                             {loadingHistory ? (
                                 <div className="flex-1 flex items-center justify-center text-slate-400 text-xs">
                                     Đang tải lịch sử...
+                                </div>
+                            ) : !user ? (
+                                <div className="flex-1 flex flex-col items-center justify-center text-slate-400 text-xs text-center p-6 space-y-3">
+                                    <div className="w-12 h-12 rounded-full bg-slate-100 flex items-center justify-center text-slate-400">
+                                        <UserIcon size={22} />
+                                    </div>
+                                    <div className="space-y-1">
+                                        <p className="font-bold text-slate-800 text-sm">Chưa đăng nhập</p>
+                                        <p className="text-slate-500 text-xs leading-relaxed max-w-[220px]">
+                                            Vui lòng đăng nhập để lưu trữ và xem lại các cuộc trò chuyện của bạn.
+                                        </p>
+                                    </div>
+                                    <button
+                                        onClick={() => {
+                                            navigate(ROUTES.LOGIN);
+                                            setIsOpen(false);
+                                        }}
+                                        className="px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-xl text-xs font-semibold shadow-xs transition cursor-pointer"
+                                    >
+                                        Đăng nhập ngay
+                                    </button>
                                 </div>
                             ) : sessionsList.length === 0 ? (
                                 <div className="flex-1 flex flex-col items-center justify-center text-slate-400 text-xs text-center p-6 space-y-2">
