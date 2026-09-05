@@ -28,7 +28,14 @@ const CATEGORY_META = {
         icon: Coffee
     },
     SINGLE: {
-        label: 'Món Lẻ',
+        label: 'Bắp Lẻ',
+        color: 'text-amber-600',
+        bg: 'bg-amber-50',
+        badgeBg: 'bg-amber-50 text-amber-700 border-amber-200',
+        icon: Popcorn
+    },
+    FOOD: {
+        label: 'Bắp Lẻ & Đồ Ăn',
         color: 'text-amber-600',
         bg: 'bg-amber-50',
         badgeBg: 'bg-amber-50 text-amber-700 border-amber-200',
@@ -125,9 +132,16 @@ export const ComboSelection = ({
         }
     };
 
+    const isCategoryMatch = (productCat, filterKey) => {
+        if (filterKey === 'ALL') return true;
+        const cat = (productCat || 'COMBO').toUpperCase();
+        if (filterKey === 'SINGLE') return cat === 'FOOD' || cat === 'SINGLE';
+        return cat === filterKey;
+    };
+
     const filteredProducts = activeCategory === 'ALL'
         ? products
-        : products.filter(p => (p.category || 'COMBO') === activeCategory);
+        : products.filter(p => isCategoryMatch(p.category, activeCategory));
 
     const sortedProducts = [...filteredProducts].sort((a, b) => {
         const orderA = a.displayOrder != null ? a.displayOrder : 999;
@@ -177,7 +191,7 @@ export const ComboSelection = ({
                     const isActive = activeCategory === cat.key;
                     const count = cat.key === 'ALL'
                         ? products.length
-                        : products.filter(p => (p.category || 'COMBO') === cat.key).length;
+                        : products.filter(p => isCategoryMatch(p.category, cat.key)).length;
 
                     return (
                         <button

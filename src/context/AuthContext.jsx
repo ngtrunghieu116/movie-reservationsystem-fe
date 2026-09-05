@@ -43,6 +43,8 @@ export const AuthProvider = ({ children }) => {
     } finally {
       localStorage.removeItem('accessToken');
       localStorage.removeItem('refreshToken');
+      localStorage.removeItem('cinemind_chat_session');
+      sessionStorage.removeItem('cinemind_chat_session');
       setToken(null);
       setUser(null);
     }
