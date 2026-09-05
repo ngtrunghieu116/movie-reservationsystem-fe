@@ -3,7 +3,7 @@ import { Outlet } from 'react-router-dom';
 import Header from '../components/common/Header';
 import Footer from '../components/common/Footer';
 import ErrorBoundary from '../components/common/ErrorBoundary';
-import FloatingAITrigger from '../components/ai/FloatingAITrigger';
+import ChatWidget from '../components/ai/ChatWidget';
 
 const MainLayout = () => {
   return (
@@ -16,7 +16,7 @@ const MainLayout = () => {
           </main>
         </div>
         <Footer />
-        <FloatingAITrigger />
+        <ChatWidget />
       </div>
     </ErrorBoundary>
   );
