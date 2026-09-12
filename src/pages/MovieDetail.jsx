@@ -4,6 +4,7 @@ import { useMovieDetail } from '../hooks/useMovieDetail';
 import { useMovieShowtimes } from '../hooks/useMovieShowtimes';
 import { useShowtimeSeats } from '../hooks/useShowtimeSeats';
 import { reservationApi } from '../api/reservationApi';
+import { showtimeApi } from '../api/showtimeApi';
 
 import MovieDetailHero from '../components/movie/MovieDetailHero';
 import MovieShowtimesSection from '../components/movie/MovieShowtimesSection';
@@ -17,33 +18,34 @@ import { AlertCircle, ArrowLeft } from 'lucide-react';
 import ROUTES from '../constants/routes';
 import toast from 'react-hot-toast';
 
-const generateNextDates = (daysCount = 7) => {
-    const dates = [];
-    const today = new Date();
+/**
+ * Chuyển đổi danh sách ngày ISO (YYYY-MM-DD) từ API thành format hiển thị.
+ */
+const buildDatesList = (isoDateStrings) => {
     const dayNames = ['Chủ nhật', 'Thứ hai', 'Thứ ba', 'Thứ tư', 'Thứ năm', 'Thứ sáu', 'Thứ bảy'];
+    const today = new Date();
+    const todayStr = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
 
-    for (let i = 0; i < daysCount; i++) {
-        const d = new Date(today);
-        d.setDate(today.getDate() + i);
+    return isoDateStrings.map((dateStr) => {
+        const parts = dateStr.split('-');
+        const d = new Date(Number(parts[0]), Number(parts[1]) - 1, Number(parts[2]));
 
-        const isToday = i === 0;
+        const isToday = dateStr === todayStr;
         const dayFullLabel = isToday ? 'Hôm nay' : dayNames[d.getDay()];
         const dayNum = String(d.getDate()).padStart(2, '0');
         const monthNum = String(d.getMonth() + 1).padStart(2, '0');
         const monthLabel = `Th. ${monthNum}`;
-        const dateStr = `${d.getFullYear()}-${monthNum}-${dayNum}`;
         const displayDate = `${dayNum}/${monthNum}`;
 
-        dates.push({
+        return {
             dateStr,
             dayFullLabel,
             monthLabel,
             dayNum,
             displayDate,
             rawDate: d
-        });
-    }
-    return dates;
+        };
+    });
 };
 
 const MovieDetail = () => {
@@ -55,10 +57,36 @@ const MovieDetail = () => {
     const { data: movie, isLoading: isMovieLoading, isError: isMovieError, error: movieError, refetch: refetchMovie } = useMovieDetail(id);
     const [isTrailerOpen, setIsTrailerOpen] = useState(false);
 
-    // 2. Date Selection State
-    const datesList = useMemo(() => generateNextDates(7), []);
+    // 2. Date Selection State - Lấy từ API thay vì sinh cứng 7 ngày
+    const [datesList, setDatesList] = useState([]);
+    const [isDatesLoading, setIsDatesLoading] = useState(true);
     const [selectedDateIndex, setSelectedDateIndex] = useState(0);
     const selectedDateObj = datesList[selectedDateIndex];
+
+    // Fetch available dates from API
+    useEffect(() => {
+        if (!id) return;
+        let cancelled = false;
+        setIsDatesLoading(true);
+
+        showtimeApi.getAvailableDates(id)
+            .then((data) => {
+                if (cancelled) return;
+                const dates = Array.isArray(data) ? data : [];
+                setDatesList(buildDatesList(dates));
+                setSelectedDateIndex(0);
+            })
+            .catch((err) => {
+                if (cancelled) return;
+                console.error('Failed to fetch available dates:', err);
+                setDatesList([]);
+            })
+            .finally(() => {
+                if (!cancelled) setIsDatesLoading(false);
+            });
+
+        return () => { cancelled = true; };
+    }, [id]);
 
     // 3. Showtimes Data
     const { 
@@ -336,6 +364,7 @@ const MovieDetail = () => {
             <MovieShowtimesSection 
                 movie={movie}
                 datesList={datesList}
+                isDatesLoading={isDatesLoading}
                 selectedDateIndex={selectedDateIndex}
                 onSelectDate={handleSelectDate}
                 showtimes={showtimes}

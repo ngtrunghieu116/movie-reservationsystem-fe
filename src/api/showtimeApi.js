@@ -17,5 +17,15 @@ export const showtimeApi = {
      */
     getShowtimes: (params = {}) => {
         return axiosClient.get('/showtimes', { params });
+    },
+
+    /**
+     * Lấy danh sách ngày có suất chiếu khả dụng (toàn rạp hoặc theo 1 phim).
+     * @param {number} [movieId]
+     * @returns {Promise<string[]>} Mảng các ngày ISO (YYYY-MM-DD)
+     */
+    getAvailableDates: (movieId) => {
+        const params = movieId ? { movieId } : {};
+        return axiosClient.get('/showtimes/available-dates', { params });
     }
 };
