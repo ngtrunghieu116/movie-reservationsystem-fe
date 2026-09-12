@@ -5,6 +5,7 @@ export const ROUTES = {
   THEATERS: '/theaters',
   TICKET_PRICES: '/ticket-prices',
   ABOUT: '/about',
+  POLICY: '/policy',
   MY_BOOKINGS: '/my-bookings',
   FOOD_PREVIEW: '/food-preview',
   ARTICLES: '/articles',

@@ -1,15 +1,16 @@
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
+import ROUTES from '../../constants/routes';
 
 export const PaymentPanel = ({
     reservationData,
     timeLeft = 0,
     isExpired = false,
     isProcessingPayment = false,
-    onPay = () => {}
+    onPay = () => { }
 }) => {
     const navigate = useNavigate();
-    const [isAgreed, setIsAgreed] = useState(true);
+    const [isAgreed, setIsAgreed] = useState(false);
 
     if (!reservationData) return null;
 
@@ -31,7 +32,7 @@ export const PaymentPanel = ({
 
     return (
         <div className="space-y-6">
-            
+
             {/* 1. Countdown Box (Pure text, no icon) */}
             <div className={`
                 p-3.5 rounded-xl border flex items-center justify-between text-xs transition-colors
@@ -168,8 +169,17 @@ export const PaymentPanel = ({
                     onChange={(e) => setIsAgreed(e.target.checked)}
                     className="mt-0.5 w-4 h-4 text-red-600 rounded border-slate-300 focus:ring-red-500 cursor-pointer"
                 />
-                <label htmlFor="agree-terms" className="cursor-pointer leading-relaxed">
-                    Tôi xác nhận các thông tin đã chính xác và đồng ý với các <span className="text-red-600 underline font-medium">điều khoản & chính sách</span>
+                <label htmlFor="agree-terms" className="cursor-pointer leading-relaxed text-xs text-slate-700">
+                    Tôi xác nhận các thông tin đã chính xác và đồng ý với các{' '}
+                    <Link
+                        to={`${ROUTES.POLICY}?tab=terms`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-red-600 underline font-semibold hover:text-red-700"
+                    >
+                        điều khoản & chính sách
+                    </Link>{' '}
+                    của rạp
                 </label>
             </div>
 
@@ -182,7 +192,7 @@ export const PaymentPanel = ({
                     className={`
                         w-full py-3.5 rounded-xl font-bold text-sm text-white shadow-md transition-all text-center
                         ${isExpired || !isAgreed
-                            ? 'bg-slate-300 cursor-not-allowed shadow-none'
+                            ? 'bg-slate-300 text-slate-500 cursor-not-allowed shadow-none'
                             : isProcessingPayment
                                 ? 'bg-red-600 opacity-80 cursor-wait'
                                 : 'bg-red-600 hover:bg-red-700 active:scale-[0.99] shadow-red-600/20 cursor-pointer'

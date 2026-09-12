@@ -19,9 +19,25 @@ export const PaymentStatusDetail = () => {
     const orderIdParam = searchParams.get('orderId');
     const vnpTxnRef = searchParams.get('vnp_TxnRef');
     const vnpSecureHash = searchParams.get('vnp_SecureHash');
+    const vnpResCode = searchParams.get('vnp_ResponseCode');
+
+    // 0. Trường hợp khách hàng hủy thanh toán tại VNPAY (vnp_ResponseCode = 24)
+    if (vnpResCode === '24') {
+      if (vnpTxnRef && vnpSecureHash) {
+        try {
+          const queryObj = Object.fromEntries(searchParams.entries());
+          await paymentApi.getVnPayReturn(queryObj);
+        } catch (e) {
+          console.warn('VNPAY return cancel notification:', e);
+        }
+      }
+      setTicketData({ reservationStatus: 'CANCELLED' });
+      setIsLoading(false);
+      return;
+    }
 
     try {
-      // 1. Trường hợp từ VNPAY Redirect về
+      // 1. Trường hợp từ VNPAY Redirect về thành công
       if (vnpTxnRef && vnpSecureHash) {
         const queryObj = Object.fromEntries(searchParams.entries());
         const returnRes = await paymentApi.getVnPayReturn(queryObj);
@@ -96,7 +112,11 @@ export const PaymentStatusDetail = () => {
     return `https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=${encodeURIComponent(code)}`;
   };
 
-  const isConfirmed = ticketData?.reservationStatus === 'CONFIRMED' || ticketData?.paymentStatus === 'COMPLETED';
+  const responseCode = searchParams.get('vnp_ResponseCode');
+  const isCancelled = responseCode === '24' || 
+                      ticketData?.reservationStatus === 'CANCELLED' || 
+                      ticketData?.paymentStatus === 'FAILED';
+  const isConfirmed = !isCancelled && (ticketData?.reservationStatus === 'CONFIRMED' || ticketData?.paymentStatus === 'COMPLETED');
 
   return (
     <>
@@ -139,8 +159,36 @@ export const PaymentStatusDetail = () => {
           </div>
         )}
 
+        {/* CANCELLED STATE: Khách hàng hủy thanh toán giữa chừng */}
+        {!isLoading && isCancelled && (
+          <div className="max-w-md w-full bg-white border border-slate-200/80 rounded-3xl p-8 sm:p-10 space-y-6 shadow-xl text-center">
+            <div className="w-16 h-16 rounded-2xl bg-amber-50 border border-amber-200 flex items-center justify-center mx-auto text-amber-600">
+              <AlertTriangle className="w-10 h-10" />
+            </div>
+            <div className="space-y-2">
+              <span className="text-xs uppercase tracking-widest text-amber-600 font-bold">
+                Giao Dịch Đã Hủy
+              </span>
+              <h1 className="text-2xl sm:text-3xl font-black text-slate-900">
+                Đơn hàng đã bị hủy
+              </h1>
+              <p className="text-xs sm:text-sm text-slate-500 max-w-sm mx-auto leading-relaxed">
+                Giao dịch thanh toán đã bị hủy. Ghế giữ chỗ của quý khách đã được giải phóng để phục vụ khán giả khác.
+              </p>
+            </div>
+            <div className="pt-2">
+              <Link
+                to="/"
+                className="w-full py-3.5 px-6 rounded-xl bg-red-600 hover:bg-red-700 text-white text-xs sm:text-sm font-bold transition flex items-center justify-center space-x-2 shadow-md shadow-red-600/20 cursor-pointer"
+              >
+                <span>Về trang chủ</span>
+              </Link>
+            </div>
+          </div>
+        )}
+
         {/* Error State Handling */}
-        {!isLoading && errorType && (
+        {!isLoading && !isCancelled && errorType && (
           <div className="max-w-xl w-full bg-white border border-red-200 rounded-3xl p-8 sm:p-10 space-y-6 shadow-xl text-center">
             <div className="w-16 h-16 rounded-2xl bg-red-50 border border-red-200 flex items-center justify-center mx-auto text-red-600">
               {errorType === '403' ? <XCircle className="w-10 h-10" /> : <AlertTriangle className="w-10 h-10" />}
@@ -175,7 +223,7 @@ export const PaymentStatusDetail = () => {
         )}
 
         {/* Success / Detail View (Matching mau_2.png in Light Mode) */}
-        {!isLoading && !errorType && ticketData && (
+        {!isLoading && !errorType && !isCancelled && ticketData && (
           <div className="w-full max-w-6xl grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
             
             {/* CỘT BÊN TRÁI: XÁC NHẬN GIAO DỊCH & HỖ TRỢ */}
