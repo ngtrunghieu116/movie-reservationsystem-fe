@@ -191,21 +191,15 @@ export const PaymentResult = () => {
                             </div>
                             <div className="space-y-1">
                                 <span className="text-xs uppercase tracking-widest text-[#F59E0B] font-bold">Giao Dịch Đã Hủy</span>
-                                <h1 className="text-2xl sm:text-3xl font-black text-white">Bạn Đã Hủy Thanh Toán</h1>
+                                <h1 className="text-2xl sm:text-3xl font-black text-white">Đơn hàng đã bị hủy</h1>
                                 <p className="text-xs sm:text-sm text-[#94A3B8] max-w-md mx-auto">
                                     Quá trình thanh toán trên VNPAY đã bị hủy. Ghế giữ chỗ của bạn có thể đã được giải phóng cho khán giả khác.
                                 </p>
                             </div>
-                            <div className="flex flex-col sm:flex-row items-center justify-center gap-3 pt-2">
-                                <Link
-                                    to={ROUTES.MOVIES}
-                                    className="w-full sm:w-auto px-6 py-3 rounded-xl bg-[#E50914] hover:bg-[#F5222D] text-white text-xs sm:text-sm font-bold transition shadow-lg shadow-[#E50914]/25"
-                                >
-                                    Chọn Lại Suất Chiếu
-                                </Link>
+                            <div className="pt-2 flex justify-center">
                                 <Link
                                     to={ROUTES.HOME}
-                                    className="w-full sm:w-auto px-6 py-3 rounded-xl bg-[#171C24] hover:bg-[#252B34] text-[#CBD5E1] border border-[#2A323E] text-xs sm:text-sm font-semibold transition"
+                                    className="w-full sm:w-auto px-8 py-3.5 rounded-xl bg-[#E50914] hover:bg-[#F5222D] text-white text-xs sm:text-sm font-bold transition shadow-lg shadow-[#E50914]/25"
                                 >
                                     Về Trang Chủ
                                 </Link>

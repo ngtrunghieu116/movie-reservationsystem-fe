@@ -31,6 +31,7 @@ const Footer = () => {
               <li><Link to={ROUTES.MOVIES} className="hover:text-white transition-colors">Phim chiếu</Link></li>
               <li><Link to={ROUTES.THEATERS} className="hover:text-white transition-colors">Cơ sở rạp</Link></li>
               <li><Link to={ROUTES.FOOD_PREVIEW} className="hover:text-white transition-colors">Bắp & Nước F&B</Link></li>
+              <li><Link to={ROUTES.POLICY} className="hover:text-white transition-colors">Chính sách & Điều khoản</Link></li>
             </ul>
           </div>
 
@@ -57,8 +58,12 @@ const Footer = () => {
         <div className="pt-8 border-t border-slate-800 flex flex-col sm:flex-row justify-between items-center gap-4 text-slate-500">
           <p>© 2026 <span className="text-primary font-bold">CineMind</span>. All rights reserved.</p>
           <div className="flex gap-4">
-            <span className="hover:text-slate-400 cursor-pointer">Bảo mật</span>
-            <span className="hover:text-slate-400 cursor-pointer">Điều khoản</span>
+            <Link to={`${ROUTES.POLICY}?tab=privacy`} className="hover:text-slate-300 transition-colors">
+              Bảo mật
+            </Link>
+            <Link to={`${ROUTES.POLICY}?tab=terms`} className="hover:text-slate-300 transition-colors">
+              Điều khoản
+            </Link>
           </div>
         </div>
       </div>
