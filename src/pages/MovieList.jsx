@@ -1,18 +1,41 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import MovieDateSelector from '../components/movie/MovieDateSelector';
 import MovieNowShowingCard from '../components/movie/MovieNowShowingCard';
 import { useNowShowingMovies } from '../hooks/useNowShowingMovies';
+import { showtimeApi } from '../api/showtimeApi';
 import { AlertCircle, Film, RefreshCw } from 'lucide-react';
 
-const getTodayDateStr = () => {
-    const today = new Date();
-    const day = String(today.getDate()).padStart(2, '0');
-    const month = String(today.getMonth() + 1).padStart(2, '0');
-    return `${today.getFullYear()}-${month}-${day}`;
-};
-
 const MovieList = () => {
-    const [selectedDateStr, setSelectedDateStr] = useState(() => getTodayDateStr());
+    const [availableDates, setAvailableDates] = useState([]);
+    const [isDatesLoading, setIsDatesLoading] = useState(true);
+    const [selectedDateStr, setSelectedDateStr] = useState('');
+
+    useEffect(() => {
+        let cancelled = false;
+        setIsDatesLoading(true);
+
+        showtimeApi.getAvailableDates()
+            .then((data) => {
+                if (cancelled) return;
+                const dates = Array.isArray(data) ? data : [];
+                setAvailableDates(dates);
+                if (dates.length > 0) {
+                    setSelectedDateStr(dates[0]);
+                }
+            })
+            .catch((err) => {
+                if (cancelled) return;
+                console.error('Failed to fetch available dates:', err);
+                setAvailableDates([]);
+            })
+            .finally(() => {
+                if (!cancelled) setIsDatesLoading(false);
+            });
+
+        return () => {
+            cancelled = true;
+        };
+    }, []);
 
     const {
         movies,
@@ -31,14 +54,16 @@ const MovieList = () => {
                 <div className="text-center space-y-3 pt-2">
                     <h1 className="text-2xl sm:text-3xl lg:text-4xl font-black tracking-tight uppercase flex items-center justify-center gap-3 text-slate-900">
                         <span className="w-3.5 h-3.5 bg-red-600 rounded-full inline-block animate-pulse shadow-md shadow-red-600/40" />
-                        <span>PHIM ĐANG CHIẾU</span>
+                        <span>LỊCH CHIẾU PHIM</span>
                     </h1>
                 </div>
 
                 {/* 2. Date Selector Bar */}
                 <MovieDateSelector 
+                    availableDates={availableDates}
                     selectedDateStr={selectedDateStr}
                     onSelectDate={setSelectedDateStr}
+                    isLoading={isDatesLoading}
                 />
 
                 {/* 3. Movie Grid Container */}
@@ -86,10 +111,10 @@ const MovieList = () => {
                     <div className="py-16 text-center bg-white border border-slate-200 rounded-3xl p-8 space-y-3 max-w-md mx-auto shadow-xs">
                         <Film className="w-12 h-12 text-slate-400 mx-auto" />
                         <h3 className="text-base font-bold text-slate-800">
-                            Hiện chưa có phim đang chiếu.
+                            Không có suất chiếu cho ngày đã chọn.
                         </h3>
                         <p className="text-xs text-slate-500">
-                            Vui lòng quay lại sau để cập nhật lịch chiếu phim mới nhất!
+                            Vui lòng chọn ngày khác trên thanh lịch chiếu để xem các suất chiếu có sẵn!
                         </p>
                     </div>
                 ) : (

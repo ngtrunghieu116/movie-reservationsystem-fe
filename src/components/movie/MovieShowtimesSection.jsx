@@ -2,6 +2,7 @@ import { AlertCircle } from 'lucide-react';
 
 export const MovieShowtimesSection = ({
     datesList,
+    isDatesLoading,
     selectedDateIndex,
     onSelectDate,
     showtimes = [],
@@ -35,31 +36,46 @@ export const MovieShowtimesSection = ({
                     </span>
                     
                     <div className="flex items-center gap-3 overflow-x-auto pb-2 scrollbar-none">
-                        {datesList.map((d, index) => {
-                            const isSelected = index === selectedDateIndex;
-                            return (
-                                <button
-                                    key={d.dateStr}
-                                    type="button"
-                                    onClick={() => onSelectDate(index)}
-                                    className={`flex-shrink-0 px-4 py-2.5 rounded-xl flex flex-col items-center min-w-[5.5rem] transition-all duration-200 border cursor-pointer select-none ${
-                                        isSelected
-                                            ? 'bg-red-600 text-white border-red-600 shadow-md shadow-red-600/30'
-                                            : 'bg-white text-slate-600 border-slate-200/80 hover:border-red-600 hover:text-slate-900 shadow-xs'
-                                    }`}
-                                >
-                                    <span className={`text-[11px] font-semibold tracking-wider ${isSelected ? 'text-white/90' : 'text-slate-500'}`}>
-                                        {d.monthLabel}
-                                    </span>
-                                    <span className={`text-xl sm:text-2xl font-black my-0.5 font-mono ${isSelected ? 'text-white' : 'text-slate-900'}`}>
-                                        {d.dayNum}
-                                    </span>
-                                    <span className={`text-[11px] font-medium ${isSelected ? 'text-white/90' : 'text-slate-500'}`}>
-                                        {d.dayFullLabel}
-                                    </span>
-                                </button>
-                            );
-                        })}
+                        {isDatesLoading ? (
+                            <div className="flex items-center space-x-2 text-xs text-slate-500 py-3">
+                                <div className="w-4 h-4 border-2 border-red-600 border-t-transparent rounded-full animate-spin" />
+                                <span>Đang tải lịch chiếu...</span>
+                            </div>
+                        ) : datesList.length === 0 ? (
+                            <span className="text-xs text-slate-500 italic py-3">
+                                {isComingSoon
+                                    ? 'Phim sắp chiếu - chưa có lịch chiếu.'
+                                    : isEnded
+                                    ? 'Phim đã kết thúc đợt chiếu.'
+                                    : 'Hiện chưa có ngày chiếu khả dụng cho phim này.'}
+                            </span>
+                        ) : (
+                            datesList.map((d, index) => {
+                                const isSelected = index === selectedDateIndex;
+                                return (
+                                    <button
+                                        key={d.dateStr}
+                                        type="button"
+                                        onClick={() => onSelectDate(index)}
+                                        className={`flex-shrink-0 px-4 py-2.5 rounded-xl flex flex-col items-center min-w-[5.5rem] transition-all duration-200 border cursor-pointer select-none ${
+                                            isSelected
+                                                ? 'bg-red-600 text-white border-red-600 shadow-md shadow-red-600/30'
+                                                : 'bg-white text-slate-600 border-slate-200/80 hover:border-red-600 hover:text-slate-900 shadow-xs'
+                                        }`}
+                                    >
+                                        <span className={`text-[11px] font-semibold tracking-wider ${isSelected ? 'text-white/90' : 'text-slate-500'}`}>
+                                            {d.monthLabel}
+                                        </span>
+                                        <span className={`text-xl sm:text-2xl font-black my-0.5 font-mono ${isSelected ? 'text-white' : 'text-slate-900'}`}>
+                                            {d.dayNum}
+                                        </span>
+                                        <span className={`text-[11px] font-medium ${isSelected ? 'text-white/90' : 'text-slate-500'}`}>
+                                            {d.dayFullLabel}
+                                        </span>
+                                    </button>
+                                );
+                            })
+                        )}
                     </div>
                 </div>
             </div>
